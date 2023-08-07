@@ -1,0 +1,108 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "contact": {}
+    },
+    "paths": {
+        "/login": {
+            "post": {
+                "description": "performs login of user",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "login"
+                ],
+                "summary": "Validate login",
+                "parameters": [
+                    {
+                        "description": "Login Data",
+                        "name": "_",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/entities.RequestLoginEntity"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/entities.LoginResponseEntity"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/utils.HttpError"
+                        }
+                    },
+                    "409": {
+                        "description": "Conflict",
+                        "schema": {
+                            "$ref": "#/definitions/utils.HttpError"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/utils.HttpError"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "entities.LoginResponseEntity": {
+            "description": "LoginResponseEntity model data",
+            "type": "object",
+            "properties": {
+                "accessToken": {
+                    "description": "Token to access this API",
+                    "type": "string"
+                },
+                "expiresIn": {
+                    "description": "Time to expires token in int",
+                    "type": "integer"
+                },
+                "refreshToken": {
+                    "description": "Token to refresh Access Token",
+                    "type": "string"
+                }
+            }
+        },
+        "entities.RequestLoginEntity": {
+            "description": "RequestLoginEntity model data",
+            "type": "object",
+            "properties": {
+                "email": {
+                    "description": "User email",
+                    "type": "string"
+                },
+                "password": {
+                    "description": "User password",
+                    "type": "string"
+                }
+            }
+        },
+        "utils.HttpError": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "type": "integer"
+                },
+                "error": {
+                    "type": "string"
+                },
+                "message": {
+                    "type": "string"
+                }
+            }
+        }
+    }
+}
