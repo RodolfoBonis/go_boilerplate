@@ -33,6 +33,26 @@ func EnvKeyCloak() entities.KeyCloakDataEntity {
 	}
 }
 
+func EnvDBHost() string {
+	return GetEnv("DB_HOST", "localhost")
+}
+
+func EnvDBPort() string {
+	return GetEnv("DB_PORT", "5432")
+}
+
+func EnvDBUser() string {
+	return GetEnv("DB_USER", "")
+}
+
+func EnvDBPassword() string {
+	return GetEnv("DB_SECRET", "")
+}
+
+func EnvDBName() string {
+	return GetEnv("DB_NAME", "")
+}
+
 func EnvGrafana() string {
 	return GetEnv("GRAFANA_HOST", "http://localhost:3100")
 }
@@ -43,6 +63,26 @@ func EnvironmentConfig() string {
 
 func EnvServiceName() string {
 	return GetEnv("SERVICE_NAME", "API")
+}
+
+func envUserAmqp() string {
+	return GetEnv("USER_AMQP", "guest")
+}
+
+func envPasswordAmqp() string {
+	return GetEnv("PASSWORD_AMQP", "guest")
+}
+
+func envHostAmqp() string {
+	return GetEnv("HOST_AMQP", "localhost:5672")
+}
+
+func EnvAmqpConnection() string {
+	user := envUserAmqp()
+	password := envPasswordAmqp()
+	host := envHostAmqp()
+
+	return fmt.Sprintf("amqp://%s:%s@%s/", user, password, host)
 }
 
 func LoadEnvVars() {
