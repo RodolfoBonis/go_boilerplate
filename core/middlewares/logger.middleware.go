@@ -65,7 +65,7 @@ func LogMiddleware() gin.HandlerFunc {
 					log.ErrorMessage = ginErr.Error()
 					log.Message = ""
 
-					logMap, _ := utils.StructToMap(log)
+					logMap, _ := log.ToMap()
 					utils.Logger.Error(logMessage, logMap)
 				}
 
@@ -73,7 +73,7 @@ func LogMiddleware() gin.HandlerFunc {
 				return
 			}
 
-			logMap, _ := utils.StructToMap(log)
+			logMap, _ := log.ToMap()
 
 			if statusCode != http.StatusOK && statusCode != http.StatusCreated {
 				utils.Logger.Warning(logMessage, logMap)

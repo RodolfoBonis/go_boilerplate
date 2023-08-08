@@ -5,7 +5,7 @@ import (
 	"github.com/RodolfoBonis/go_boilerplate/core/entities"
 )
 
-type LoginUseCase struct {
+type AuthUseCase struct {
 	KeycloakClient     *gocloak.GoCloak
 	KeycloakAccessData entities.KeyCloakDataEntity
 }
