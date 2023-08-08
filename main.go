@@ -57,10 +57,10 @@ func init() {
 
 	services.InitializeOAuthServer()
 
-	docs.SwaggerInfo.Title = "Internal API"
-	docs.SwaggerInfo.Description = "A Internal API to management internal applications"
+	docs.SwaggerInfo.Title = "Go API Boilerplate"
+	docs.SwaggerInfo.Description = "A Boilerplate to create go services using gin gonic"
 	docs.SwaggerInfo.Version = "0.0.1"
-	docs.SwaggerInfo.Host = fmt.Sprintf("http://localhost:%s", config.EnvPort())
+	docs.SwaggerInfo.Host = fmt.Sprintf("localhost:%s", config.EnvPort())
 	docs.SwaggerInfo.BasePath = "/v1"
 	docs.SwaggerInfo.Schemes = []string{"http", "https"}
 }

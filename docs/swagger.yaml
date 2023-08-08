@@ -76,6 +76,41 @@ paths:
       summary: Validate auth
       tags:
       - Auth
+  /health_check:
+    get:
+      consumes:
+      - application/json
+      description: Check if This service is healthy
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/utils.HttpError'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/utils.HttpError'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/utils.HttpError'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/utils.HttpError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/utils.HttpError'
+      summary: Health Check
+      tags:
+      - HealthCheck
   /logout:
     post:
       consumes:
