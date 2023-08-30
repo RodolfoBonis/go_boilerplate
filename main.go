@@ -3,13 +3,12 @@ package main
 import (
 	"fmt"
 	"github.com/RodolfoBonis/go_boilerplate/core/config"
-	"github.com/RodolfoBonis/go_boilerplate/core/middlewares"
 	"github.com/RodolfoBonis/go_boilerplate/core/services"
-	"github.com/RodolfoBonis/go_boilerplate/core/utils"
 	"github.com/RodolfoBonis/go_boilerplate/docs"
 	"github.com/RodolfoBonis/go_boilerplate/routes"
 	"github.com/gin-gonic/gin"
 	log "github.com/sirupsen/logrus"
+	"go.elastic.co/apm/module/apmgin"
 	"time"
 )
 
@@ -22,11 +21,11 @@ func main() {
 		log.Fatal(err)
 	}
 
+	app.Use(apmgin.Middleware(app))
+
 	app.Use(gin.Logger())
 	app.Use(gin.Recovery())
 	app.Use(gin.ErrorLogger())
-
-	app.Use(middlewares.LogMiddleware())
 
 	routes.InitializeRoutes(app)
 
@@ -46,16 +45,18 @@ func init() {
 		TimestampFormat: time.RFC3339Nano,
 	})
 
-	labels := map[string]string{
-		"source":      config.EnvServiceName(),
-		"environment": config.EnvironmentConfig(),
-	}
-
-	utils.NewLokiService(config.EnvGrafana(), labels)
-
 	config.LoadEnvVars()
 
 	services.InitializeOAuthServer()
+
+	// Use this for open connection with DataBase
+	// services.OpenConnection()
+
+	// Use this for Run Yours migrations
+	// services.RunMigrations()
+
+	// Use this for open connection with RabbitMQ
+	// services.StartAmqpConnection()
 
 	docs.SwaggerInfo.Title = "Go API Boilerplate"
 	docs.SwaggerInfo.Description = "A Boilerplate to create go services using gin gonic"

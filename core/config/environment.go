@@ -3,7 +3,6 @@ package config
 import (
 	"fmt"
 	"github.com/RodolfoBonis/go_boilerplate/core/entities"
-	"github.com/RodolfoBonis/go_boilerplate/core/utils"
 	"os"
 
 	"github.com/joho/godotenv"
@@ -88,7 +87,7 @@ func EnvAmqpConnection() string {
 func LoadEnvVars() {
 	env := EnvironmentConfig()
 	if env == entities.Environment.Production || env == entities.Environment.Staging {
-		utils.Logger.Info("Not using .env file in production or staging")
+		log.Info("Not using .env file in production or staging")
 		return
 	}
 
