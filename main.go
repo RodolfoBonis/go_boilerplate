@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/RodolfoBonis/go_boilerplate/core/config"
 	"github.com/RodolfoBonis/go_boilerplate/core/services"
+	"github.com/RodolfoBonis/go_boilerplate/core/utils"
 	"github.com/RodolfoBonis/go_boilerplate/docs"
 	"github.com/RodolfoBonis/go_boilerplate/routes"
 	"github.com/gin-gonic/gin"
@@ -46,6 +47,8 @@ func init() {
 	})
 
 	config.LoadEnvVars()
+
+	utils.InitLogger()
 
 	services.InitializeOAuthServer()
 

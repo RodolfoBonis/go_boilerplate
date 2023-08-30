@@ -52,8 +52,8 @@ func EnvDBName() string {
 	return GetEnv("DB_NAME", "")
 }
 
-func EnvGrafana() string {
-	return GetEnv("GRAFANA_HOST", "http://localhost:3100")
+func EnvElasticSearch() string {
+	return GetEnv("ELASTICSEARCH_URL", "http://localhost:9200")
 }
 
 func EnvironmentConfig() string {

@@ -4,6 +4,7 @@ go 1.20
 
 require (
 	github.com/Nerzal/gocloak/v13 v13.8.0
+	github.com/elastic/go-elasticsearch/v8 v8.9.0
 	github.com/gin-gonic/gin v1.9.1
 	github.com/golang-jwt/jwt/v4 v4.5.0
 	github.com/jinzhu/gorm v1.9.16
@@ -24,6 +25,7 @@ require (
 	github.com/armon/go-radix v1.0.0 // indirect
 	github.com/bytedance/sonic v1.9.1 // indirect
 	github.com/chenzhuoyu/base64x v0.0.0-20221115062448-fe3a3abad311 // indirect
+	github.com/elastic/elastic-transport-go/v8 v8.0.0-20230329154755-1a3c63de0db6 // indirect
 	github.com/elastic/go-licenser v0.3.1 // indirect
 	github.com/elastic/go-sysinfo v1.1.1 // indirect
 	github.com/elastic/go-windows v1.0.0 // indirect
