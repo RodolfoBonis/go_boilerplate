@@ -75,7 +75,20 @@ func Protect(handler gin.HandlerFunc, role string) gin.HandlerFunc {
 			return
 		}
 
-		containsRole := userClaim.ResourceAccess.Api.Roles.Contains(role)
+		keyCloakData := config.EnvKeyCloak()
+
+		client := userClaim.ResourceAccess[keyCloakData.ClientID].(map[string]interface{})
+
+		rolesBytes, err := json.Marshal(client["roles"])
+
+		err = json.Unmarshal(rolesBytes, &userClaim.Roles)
+		if err != nil {
+			currentError := utils.BadRequestError(err.Error())
+			c.JSON(currentError.StatusCode, currentError)
+			return
+		}
+
+		containsRole := userClaim.Roles.Contains(role)
 
 		if !containsRole {
 			currentError := utils.UnauthorizedError()
