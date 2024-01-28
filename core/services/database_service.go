@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"github.com/RodolfoBonis/go_boilerplate/core/config"
 	"github.com/RodolfoBonis/go_boilerplate/core/entities"
-	log "github.com/sirupsen/logrus"
+	"github.com/RodolfoBonis/go_boilerplate/core/errors"
 	"time"
 
 	"github.com/jinzhu/gorm"
@@ -43,7 +43,7 @@ func connectorURL(connectorConfig *ConnectorConfig) string {
 	)
 }
 
-func OpenConnection() {
+func OpenConnection() *errors.AppError {
 	dbConfig := connectorURL(buildConnectorConfig())
 
 	db, err := gorm.Open("postgres",
@@ -51,7 +51,7 @@ func OpenConnection() {
 	)
 
 	if err != nil {
-		log.Fatal(err)
+		return errors.DatabaseError(err.Error())
 	}
 
 	environment := config.EnvironmentConfig()
@@ -92,6 +92,8 @@ func OpenConnection() {
 			}
 		}
 	}(dbConfig)
+
+	return nil
 }
 
 func RetryHandler(n int, f func() (bool, error)) error {
@@ -116,4 +118,5 @@ func RunMigrations() {
 				&dtos.Orders{},
 			)
 	*/
+
 }

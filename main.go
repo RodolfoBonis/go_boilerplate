@@ -3,8 +3,9 @@ package main
 import (
 	"fmt"
 	"github.com/RodolfoBonis/go_boilerplate/core/config"
+	"github.com/RodolfoBonis/go_boilerplate/core/errors"
+	"github.com/RodolfoBonis/go_boilerplate/core/logger"
 	"github.com/RodolfoBonis/go_boilerplate/core/services"
-	"github.com/RodolfoBonis/go_boilerplate/core/utils"
 	"github.com/RodolfoBonis/go_boilerplate/docs"
 	"github.com/RodolfoBonis/go_boilerplate/routes"
 	"github.com/gin-gonic/gin"
@@ -19,7 +20,9 @@ func main() {
 	err := app.SetTrustedProxies([]string{})
 
 	if err != nil {
-		log.Fatal(err)
+		appError := errors.RootError(err.Error())
+		logger.Log.Error(appError.Message, appError.ToMap())
+		panic(err)
 	}
 
 	app.Use(apmgin.Middleware(app))
@@ -35,6 +38,8 @@ func main() {
 	err = app.Run(runPort)
 
 	if err != nil {
+		appError := errors.RootError(err.Error())
+		logger.Log.Error(appError.Message, appError.ToMap())
 		panic(err)
 	}
 
@@ -48,12 +53,17 @@ func init() {
 
 	config.LoadEnvVars()
 
-	utils.InitLogger()
+	logger.InitLogger()
 
 	services.InitializeOAuthServer()
 
 	// Use this for open connection with DataBase
-	// services.OpenConnection()
+	//appError := services.OpenConnection()
+	//
+	//if appError != nil {
+	//	logger.Log.Error(appError.Message, appError.ToMap())
+	//	panic(appError)
+	//}
 
 	// Use this for Run Yours migrations
 	// services.RunMigrations()

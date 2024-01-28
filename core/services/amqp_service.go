@@ -2,7 +2,7 @@ package services
 
 import (
 	"github.com/RodolfoBonis/go_boilerplate/core/config"
-	"github.com/RodolfoBonis/go_boilerplate/core/utils"
+	"github.com/RodolfoBonis/go_boilerplate/core/errors"
 	amqp "github.com/rabbitmq/amqp091-go"
 	log "github.com/sirupsen/logrus"
 	"net/http"
@@ -20,11 +20,11 @@ func StartAmqpConnection() *amqp.Connection {
 	return connection
 }
 
-func StartChannelConnection() (*amqp.Channel, *utils.HttpError) {
+func StartChannelConnection() (*amqp.Channel, *errors.AppError) {
 	connection := StartAmqpConnection()
 	channel, err := connection.Channel()
 	if err != nil {
-		return nil, utils.InternalServerError("Failed to open a channel")
+		return nil, errors.ServiceError("Failed to open a channel")
 	}
 
 	return channel, nil

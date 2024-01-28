@@ -4,8 +4,9 @@ import (
 	"encoding/json"
 	"github.com/RodolfoBonis/go_boilerplate/core/config"
 	"github.com/RodolfoBonis/go_boilerplate/core/entities"
+	"github.com/RodolfoBonis/go_boilerplate/core/errors"
+	"github.com/RodolfoBonis/go_boilerplate/core/logger"
 	"github.com/RodolfoBonis/go_boilerplate/core/services"
-	"github.com/RodolfoBonis/go_boilerplate/core/utils"
 	"github.com/gin-gonic/gin"
 	"strings"
 
@@ -18,8 +19,10 @@ func Protect(handler gin.HandlerFunc, role string) gin.HandlerFunc {
 		authHeader := c.GetHeader("Authorization")
 
 		if len(authHeader) < 1 {
-			err := utils.UnauthorizedError()
-			c.AbortWithStatusJSON(err.StatusCode, err)
+			err := errors.InvalidTokenError()
+			httpError := err.ToHttpError()
+			logger.Log.Error(err.Message, err.ToMap())
+			c.AbortWithStatusJSON(httpError.StatusCode, httpError)
 			c.Abort()
 			return
 		}
@@ -35,8 +38,10 @@ func Protect(handler gin.HandlerFunc, role string) gin.HandlerFunc {
 		)
 
 		if err != nil {
-			currentError := utils.BadRequestError(err.Error())
-			c.AbortWithStatusJSON(currentError.StatusCode, currentError)
+			appError := errors.MiddlewareError(err.Error())
+			httpError := appError.ToHttpError()
+			logger.Log.Error(appError.Message, appError.ToMap())
+			c.AbortWithStatusJSON(httpError.StatusCode, httpError)
 			c.Abort()
 			return
 		}
@@ -44,8 +49,10 @@ func Protect(handler gin.HandlerFunc, role string) gin.HandlerFunc {
 		isTokenValid := *rptResult.Active
 
 		if !isTokenValid {
-			currentError := utils.UnauthorizedError()
-			c.AbortWithStatusJSON(currentError.StatusCode, currentError)
+			appError := errors.InvalidTokenError()
+			httpError := appError.ToHttpError()
+			logger.Log.Error(appError.Message, appError.ToMap())
+			c.AbortWithStatusJSON(httpError.StatusCode, httpError)
 			c.Abort()
 			return
 		}
@@ -57,8 +64,11 @@ func Protect(handler gin.HandlerFunc, role string) gin.HandlerFunc {
 		)
 
 		if err != nil {
-			currentError := utils.BadRequestError(err.Error())
-			c.JSON(currentError.StatusCode, currentError)
+			appError := errors.MiddlewareError(err.Error())
+			httpError := appError.ToHttpError()
+			logger.Log.Error(appError.Message, appError.ToMap())
+			c.AbortWithStatusJSON(httpError.StatusCode, httpError)
+			c.Abort()
 			return
 		}
 
@@ -70,8 +80,11 @@ func Protect(handler gin.HandlerFunc, role string) gin.HandlerFunc {
 
 		err = json.Unmarshal(jsonData, &userClaim)
 		if err != nil {
-			currentError := utils.BadRequestError(err.Error())
-			c.JSON(currentError.StatusCode, currentError)
+			appError := errors.MiddlewareError(err.Error())
+			httpError := appError.ToHttpError()
+			logger.Log.Error(appError.Message, appError.ToMap())
+			c.AbortWithStatusJSON(httpError.StatusCode, httpError)
+			c.Abort()
 			return
 		}
 
@@ -83,16 +96,21 @@ func Protect(handler gin.HandlerFunc, role string) gin.HandlerFunc {
 
 		err = json.Unmarshal(rolesBytes, &userClaim.Roles)
 		if err != nil {
-			currentError := utils.BadRequestError(err.Error())
-			c.JSON(currentError.StatusCode, currentError)
+			appError := errors.MiddlewareError(err.Error())
+			httpError := appError.ToHttpError()
+			logger.Log.Error(appError.Message, appError.ToMap())
+			c.AbortWithStatusJSON(httpError.StatusCode, httpError)
+			c.Abort()
 			return
 		}
 
 		containsRole := userClaim.Roles.Contains(role)
 
 		if !containsRole {
-			currentError := utils.UnauthorizedError()
-			c.AbortWithStatusJSON(currentError.StatusCode, currentError)
+			appError := errors.UnauthorizedError()
+			httpError := appError.ToHttpError()
+			logger.Log.Error(appError.Message, appError.ToMap())
+			c.AbortWithStatusJSON(httpError.StatusCode, httpError)
 			c.Abort()
 			return
 		}

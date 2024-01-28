@@ -1,4 +1,4 @@
-package utils
+package logger
 
 import (
 	"bytes"
@@ -6,9 +6,8 @@ import (
 	"encoding/json"
 	_ "fmt"
 	"github.com/RodolfoBonis/go_boilerplate/core/config"
-	"github.com/RodolfoBonis/go_boilerplate/core/entities"
-	"github.com/elastic/go-elasticsearch/v8"
-	"github.com/elastic/go-elasticsearch/v8/esapi"
+	"github.com/elastic/go-elasticsearch/v7"
+	"github.com/elastic/go-elasticsearch/v7/esapi"
 	"github.com/sirupsen/logrus"
 	"io"
 	"log"
@@ -17,7 +16,7 @@ import (
 )
 
 var (
-	Logger *CustomLogger
+	Log *CustomLogger
 )
 
 // CustomLogger é uma estrutura que encapsula um logrus.Logger e um cliente elasticsearch.Client.
@@ -51,7 +50,7 @@ func InitLogger() {
 	logger.SetOutput(os.Stdout)
 	logger.SetLevel(logrus.InfoLevel)
 
-	Logger = &CustomLogger{
+	Log = &CustomLogger{
 		logger: logger,
 		client: client,
 	}
@@ -100,23 +99,23 @@ func (cl *CustomLogger) sendLog(level, message string, jsonData ...map[string]in
 	}
 
 	indexName := config.EnvServiceName()
-	environment := config.EnvironmentConfig()
+	//environment := config.EnvironmentConfig()
 
-	if environment != entities.Environment.Development {
-		req := esapi.IndexRequest{
-			Index:      indexName,
-			DocumentID: "",
-			Body:       bytes.NewReader(document),
-			Refresh:    "true",
-		}
-
-		_, err = req.Do(context.Background(), cl.client)
-
-		if err != nil {
-			cl.logger.Error("Error marshaling log data:", err)
-			return
-		}
+	//if environment != entities.Environment.Development {
+	req := esapi.IndexRequest{
+		Index:      indexName,
+		DocumentID: "",
+		Body:       bytes.NewReader(document),
+		Refresh:    "true",
 	}
+
+	_, err = req.Do(context.Background(), cl.client)
+
+	if err != nil {
+		cl.logger.Error("Error marshaling log data:", err)
+		return
+	}
+	//}
 }
 
 // SetOutput sets the logger output.
