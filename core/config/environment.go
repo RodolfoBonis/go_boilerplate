@@ -6,7 +6,6 @@ import (
 	"os"
 
 	"github.com/joho/godotenv"
-	log "github.com/sirupsen/logrus"
 )
 
 func GetEnv(key, defaultValue string) string {
@@ -32,6 +31,17 @@ func EnvKeyCloak() entities.KeyCloakDataEntity {
 	}
 }
 
+func EnvNewRelic() entities.NewRelicEnv {
+	return entities.NewRelicEnv{
+		AppName: EnvServiceName(),
+		License: GetEnv("NEW_RELIC_LICENSE_KEY", ""),
+	}
+}
+
+func EnvSentryDSN() string {
+	return GetEnv("SENTRY_DSN", "")
+}
+
 func EnvDBHost() string {
 	return GetEnv("DB_HOST", "localhost")
 }
@@ -50,10 +60,6 @@ func EnvDBPassword() string {
 
 func EnvDBName() string {
 	return GetEnv("DB_NAME", "")
-}
-
-func EnvElasticSearch() string {
-	return GetEnv("ELASTICSEARCH_URL", "http://localhost:9200")
 }
 
 func EnvironmentConfig() string {
@@ -87,7 +93,7 @@ func EnvAmqpConnection() string {
 func LoadEnvVars() {
 	env := EnvironmentConfig()
 	if env == entities.Environment.Production || env == entities.Environment.Staging {
-		log.Info("Not using .env file in production or staging")
+		fmt.Printf("Not using .env file in production or staging")
 		return
 	}
 
@@ -100,6 +106,7 @@ func LoadEnvVars() {
 	err := godotenv.Load(filename)
 
 	if err != nil {
-		log.Fatal(".env file not loaded")
+		fmt.Printf(".env file not loaded")
+		os.Exit(1)
 	}
 }

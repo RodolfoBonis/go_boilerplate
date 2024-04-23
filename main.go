@@ -5,13 +5,11 @@ import (
 	"github.com/RodolfoBonis/go_boilerplate/core/config"
 	"github.com/RodolfoBonis/go_boilerplate/core/errors"
 	"github.com/RodolfoBonis/go_boilerplate/core/logger"
+	"github.com/RodolfoBonis/go_boilerplate/core/middlewares"
 	"github.com/RodolfoBonis/go_boilerplate/core/services"
 	"github.com/RodolfoBonis/go_boilerplate/docs"
 	"github.com/RodolfoBonis/go_boilerplate/routes"
 	"github.com/gin-gonic/gin"
-	log "github.com/sirupsen/logrus"
-	"go.elastic.co/apm/module/apmgin"
-	"time"
 )
 
 func main() {
@@ -25,7 +23,15 @@ func main() {
 		panic(err)
 	}
 
-	app.Use(apmgin.Middleware(app))
+	config.SentryConfig()
+
+	newRelicConfig := config.NewRelicConfig()
+
+	_middleware := middlewares.NewMonitoringMiddleware(newRelicConfig)
+
+	app.Use(_middleware.NewRelicMiddleware())
+	app.Use(_middleware.SentryMiddleware())
+	app.Use(_middleware.LogMiddleware)
 
 	app.Use(gin.Logger())
 	app.Use(gin.Recovery())
@@ -46,10 +52,6 @@ func main() {
 }
 
 func init() {
-	log.SetFormatter(&log.TextFormatter{
-		FullTimestamp:   true,
-		TimestampFormat: time.RFC3339Nano,
-	})
 
 	config.LoadEnvVars()
 

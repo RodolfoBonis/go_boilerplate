@@ -2,7 +2,7 @@ package entities
 
 import (
 	"github.com/RodolfoBonis/go_boilerplate/core/types"
-	uuid "github.com/satori/go.uuid"
+	"github.com/google/uuid"
 )
 
 type JWTClaim struct {

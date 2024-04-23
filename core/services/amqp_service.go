@@ -1,10 +1,10 @@
 package services
 
 import (
+	"context"
 	"github.com/RodolfoBonis/go_boilerplate/core/config"
-	"github.com/RodolfoBonis/go_boilerplate/core/errors"
+	"github.com/RodolfoBonis/go_boilerplate/core/logger"
 	amqp "github.com/rabbitmq/amqp091-go"
-	log "github.com/sirupsen/logrus"
 	"net/http"
 	"os"
 )
@@ -13,19 +13,91 @@ func StartAmqpConnection() *amqp.Connection {
 	connectionString := config.EnvAmqpConnection()
 	connection, err := amqp.Dial(connectionString)
 	if err != nil {
-		log.Fatal("Failed to connect to RabbitMQ")
+		logger.Log.Error("Failed to connect to RabbitMQ")
 		os.Exit(http.StatusInternalServerError)
 	}
 
 	return connection
 }
 
-func StartChannelConnection() (*amqp.Channel, *errors.AppError) {
+func StartChannelConnection() *amqp.Channel {
 	connection := StartAmqpConnection()
 	channel, err := connection.Channel()
 	if err != nil {
-		return nil, errors.ServiceError("Failed to open a channel")
+		logger.Log.Error("Failed to open a channel")
+		os.Exit(http.StatusInternalServerError)
 	}
 
-	return channel, nil
+	return channel
+}
+
+func SendDataToQueue(queue string, payload []byte) {
+	channel := StartChannelConnection()
+
+	q, internalError := channel.QueueDeclare(
+		queue, // name
+		false, // durable
+		false, // delete when unused
+		false, // exclusive
+		false, // no-wait
+		nil,   // arguments
+	)
+
+	if internalError != nil {
+		logger.Log.Error(internalError.Error())
+
+		os.Exit(http.StatusInternalServerError)
+	}
+
+	internalError = channel.PublishWithContext(context.Background(),
+		"",     // exchange
+		q.Name, // routing key
+		false,  // mandatory
+		false,  // immediate
+		amqp.Publishing{
+			ContentType: "application/json",
+			Body:        payload,
+		})
+
+	if internalError != nil {
+		logger.Log.Error(internalError.Error())
+
+		os.Exit(http.StatusInternalServerError)
+	}
+}
+
+func ConsumeQueue(queue string) <-chan amqp.Delivery {
+
+	channel := StartChannelConnection()
+
+	q, internalError := channel.QueueDeclare(
+		queue, // name
+		false, // durable
+		false, // delete when unused
+		false, // exclusive
+		false, // no-wait
+		nil,   // arguments
+	)
+
+	if internalError != nil {
+		logger.Log.Error(internalError.Error())
+		os.Exit(http.StatusInternalServerError)
+	}
+
+	msgs, internalError := channel.Consume(
+		q.Name, // queue
+		"",     // consumer
+		true,   // auto-ack
+		false,  // exclusive
+		false,  // no-local
+		false,  // no-wait
+		nil,    // args
+	)
+
+	if internalError != nil {
+		logger.Log.Error(internalError.Error())
+		os.Exit(http.StatusInternalServerError)
+	}
+
+	return msgs
 }
