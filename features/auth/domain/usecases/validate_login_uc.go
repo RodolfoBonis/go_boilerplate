@@ -56,7 +56,7 @@ func (uc *AuthUseCase) ValidateLogin(c *gin.Context) {
 		return
 	}
 
-	logger.Log.Success("Login successful", map[string]interface{}{
+	logger.Log.Info("Login successful", map[string]interface{}{
 		"email": loginData.Email,
 	})
 
@@ -104,7 +104,7 @@ func (uc *AuthUseCase) ValidateToken(c *gin.Context) {
 		return
 	}
 
-	logger.Log.Success("Token validated")
+	logger.Log.Info("Token validated")
 
 	isTokenValid := *rptResult.Active
 
@@ -117,7 +117,7 @@ func (uc *AuthUseCase) ValidateToken(c *gin.Context) {
 		return
 	}
 
-	logger.Log.Success("Token is valid")
+	logger.Log.Info("Token is valid")
 
 	c.JSON(http.StatusOK, true)
 }

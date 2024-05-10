@@ -44,20 +44,20 @@ func InitLogger() {
 
 // Info envia um log de informação para o New Relic e o logger.
 func (cl *CustomLogger) Info(message string, jsonData ...map[string]interface{}) {
-	cl.logger.Info(message)
+	cl.logger.Info(message, zap.Any("json", jsonData))
 }
 
 // Warning envia um log de aviso para o New Relic e o logger.
 func (cl *CustomLogger) Warning(message string, jsonData ...map[string]interface{}) {
-	cl.logger.Warn(message)
+	cl.logger.Warn(message, zap.Any("json", jsonData))
 }
 
 // Error envia um log de erro para o New Relic e o logger.
 func (cl *CustomLogger) Error(message string, jsonData ...map[string]interface{}) {
-	cl.logger.Error(message)
+	cl.logger.Error(message, zap.Any("json", jsonData))
 }
 
 // Success envia um log de sucesso para o New Relic e o logger.
 func (cl *CustomLogger) Success(message string, jsonData ...map[string]interface{}) {
-	cl.logger.Info(message)
+	cl.logger.Info("Success! "+message, zap.Any("json", jsonData))
 }
