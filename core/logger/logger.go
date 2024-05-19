@@ -56,8 +56,3 @@ func (cl *CustomLogger) Warning(message string, jsonData ...map[string]interface
 func (cl *CustomLogger) Error(message string, jsonData ...map[string]interface{}) {
 	cl.logger.Error(message, zap.Any("json", jsonData))
 }
-
-// Success envia um log de sucesso para o New Relic e o logger.
-func (cl *CustomLogger) Success(message string, jsonData ...map[string]interface{}) {
-	cl.logger.Info("Success! "+message, zap.Any("json", jsonData))
-}
