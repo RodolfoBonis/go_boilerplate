@@ -89,8 +89,8 @@ jobs:
           push: true
           tags: {% raw %}${{ env.IMAGE_URL }}{% endraw %}
           build-args: |
-            "GITHUB_TOKEN=${{ secrets.GH_TOKEN }}"
-            "VERSION=${{ env.VERSION }}"
+            "GITHUB_TOKEN={% raw %}${{ secrets.GH_TOKEN }}{% endraw %}"
+            "VERSION={% raw %}${{ env.VERSION }}{% endraw %}"
 
       - name: Deploy Image to CapRover
         uses: caprover/deploy-from-github@v1.1.2
