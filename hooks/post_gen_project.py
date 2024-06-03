@@ -1,7 +1,7 @@
 import os
 import shutil
 
-dir_name = '{{cookiecutter.package_name}}'
+dir_name = 'template'
 
 if os.path.isdir(dir_name):
     for filename in os.listdir(dir_name):
