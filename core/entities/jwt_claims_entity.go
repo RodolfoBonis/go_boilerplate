@@ -1,8 +1,8 @@
 package entities
 
 import (
-	"github.com/RodolfoBonis/go_boilerplate/core/types"
 	"github.com/google/uuid"
+	"github.com/{{cookiecutter.github_username}}/{{cookiecutter.package_name}}/core/types"
 )
 
 type JWTClaim struct {

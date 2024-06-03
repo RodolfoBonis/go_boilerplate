@@ -1,12 +1,12 @@
 package middlewares
 
 import (
-	"github.com/RodolfoBonis/go_boilerplate/core/logger"
 	sentrygin "github.com/getsentry/sentry-go/gin"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 	"github.com/newrelic/go-agent/v3/integrations/nrgin"
 	"github.com/newrelic/go-agent/v3/newrelic"
+	"github.com/{{cookiecutter.github_username}}/{{cookiecutter.package_name}}/core/logger"
 	"net/http"
 )
 

@@ -2,12 +2,12 @@ package middlewares
 
 import (
 	"encoding/json"
-	"github.com/RodolfoBonis/go_boilerplate/core/config"
-	"github.com/RodolfoBonis/go_boilerplate/core/entities"
-	"github.com/RodolfoBonis/go_boilerplate/core/errors"
-	"github.com/RodolfoBonis/go_boilerplate/core/logger"
-	"github.com/RodolfoBonis/go_boilerplate/core/services"
 	"github.com/gin-gonic/gin"
+	"github.com/{{cookiecutter.github_username}}/{{cookiecutter.package_name}}/core/config"
+	"github.com/{{cookiecutter.github_username}}/{{cookiecutter.package_name}}/core/entities"
+	"github.com/{{cookiecutter.github_username}}/{{cookiecutter.package_name}}/core/errors"
+	"github.com/{{cookiecutter.github_username}}/{{cookiecutter.package_name}}/core/logger"
+	"github.com/{{cookiecutter.github_username}}/{{cookiecutter.package_name}}/core/services"
 	"strings"
 
 	jsonToken "github.com/golang-jwt/jwt/v4"

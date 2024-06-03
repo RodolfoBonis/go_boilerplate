@@ -2,7 +2,7 @@ package services
 
 import (
 	"github.com/Nerzal/gocloak/v13"
-	"github.com/RodolfoBonis/go_boilerplate/core/config"
+	"github.com/{{cookiecutter.github_username}}/{{cookiecutter.package_name}}/core/config"
 )
 
 var AuthClient *gocloak.GoCloak

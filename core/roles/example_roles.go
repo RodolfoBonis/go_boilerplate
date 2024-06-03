@@ -1,6 +1,6 @@
 package roles
 
-import "github.com/RodolfoBonis/go_boilerplate/core/entities"
+import "github.com/{{cookiecutter.github_username}}/{{cookiecutter.package_name}}/core/entities"
 
 var ExampleRoles = entities.Roles{
 	Search: "search-examples",

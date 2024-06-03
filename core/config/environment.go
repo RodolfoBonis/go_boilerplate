@@ -2,7 +2,7 @@ package config
 
 import (
 	"fmt"
-	"github.com/RodolfoBonis/go_boilerplate/core/entities"
+	"github.com/{{cookiecutter.github_username}}/{{cookiecutter.package_name}}/core/entities"
 	"os"
 
 	"github.com/joho/godotenv"

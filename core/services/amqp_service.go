@@ -2,9 +2,9 @@ package services
 
 import (
 	"context"
-	"github.com/RodolfoBonis/go_boilerplate/core/config"
-	"github.com/RodolfoBonis/go_boilerplate/core/logger"
 	amqp "github.com/rabbitmq/amqp091-go"
+	"github.com/{{cookiecutter.github_username}}/{{cookiecutter.package_name}}/core/config"
+	"github.com/{{cookiecutter.github_username}}/{{cookiecutter.package_name}}/core/logger"
 	"net/http"
 	"os"
 )

@@ -1,9 +1,9 @@
 package usecases
 
 import (
-	"github.com/RodolfoBonis/go_boilerplate/core/errors"
-	"github.com/RodolfoBonis/go_boilerplate/core/logger"
 	"github.com/gin-gonic/gin"
+	"github.com/{{cookiecutter.github_username}}/{{cookiecutter.package_name}}/core/errors"
+	"github.com/{{cookiecutter.github_username}}/{{cookiecutter.package_name}}/core/logger"
 	"net/http"
 	"strings"
 )

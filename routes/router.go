@@ -1,12 +1,12 @@
 package routes
 
 import (
-	"github.com/RodolfoBonis/go_boilerplate/core/health"
-	"github.com/RodolfoBonis/go_boilerplate/features/auth"
 	"github.com/gin-gonic/gin"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
+	"github.com/{{cookiecutter.github_username}}/{{cookiecutter.package_name}}/core/health"
+	"github.com/{{cookiecutter.github_username}}/{{cookiecutter.package_name}}/features/auth"
 )
 
 func InitializeRoutes(router *gin.Engine) {

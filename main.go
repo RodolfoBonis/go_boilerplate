@@ -2,14 +2,14 @@ package main
 
 import (
 	"fmt"
-	"github.com/RodolfoBonis/go_boilerplate/core/config"
-	"github.com/RodolfoBonis/go_boilerplate/core/errors"
-	"github.com/RodolfoBonis/go_boilerplate/core/logger"
-	"github.com/RodolfoBonis/go_boilerplate/core/middlewares"
-	"github.com/RodolfoBonis/go_boilerplate/core/services"
-	"github.com/RodolfoBonis/go_boilerplate/docs"
-	"github.com/RodolfoBonis/go_boilerplate/routes"
 	"github.com/gin-gonic/gin"
+	"github.com/{{cookiecutter.github_username}}/{{cookiecutter.package_name}}/core/config"
+	"github.com/{{cookiecutter.github_username}}/{{cookiecutter.package_name}}/core/errors"
+	"github.com/{{cookiecutter.github_username}}/{{cookiecutter.package_name}}/core/logger"
+	"github.com/{{cookiecutter.github_username}}/{{cookiecutter.package_name}}/core/middlewares"
+	"github.com/{{cookiecutter.github_username}}/{{cookiecutter.package_name}}/core/services"
+	"github.com/{{cookiecutter.github_username}}/{{cookiecutter.package_name}}/docs"
+	"github.com/{{cookiecutter.github_username}}/{{cookiecutter.package_name}}/routes"
 )
 
 func main() {

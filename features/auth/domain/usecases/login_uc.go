@@ -2,7 +2,7 @@ package usecases
 
 import (
 	"github.com/Nerzal/gocloak/v13"
-	"github.com/RodolfoBonis/go_boilerplate/core/entities"
+	"github.com/{{cookiecutter.github_username}}/{{cookiecutter.package_name}}/core/entities"
 )
 
 type AuthUseCase struct {

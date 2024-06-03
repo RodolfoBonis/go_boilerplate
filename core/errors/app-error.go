@@ -1,8 +1,8 @@
 package errors
 
 import (
-	"github.com/RodolfoBonis/go_boilerplate/core/entities"
-	"github.com/RodolfoBonis/go_boilerplate/core/types"
+	"github.com/{{cookiecutter.github_username}}/{{cookiecutter.package_name}}/core/entities"
+	"github.com/{{cookiecutter.github_username}}/{{cookiecutter.package_name}}/core/types"
 )
 
 type AppError struct {

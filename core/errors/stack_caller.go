@@ -1,7 +1,7 @@
 package errors
 
 import (
-	"github.com/RodolfoBonis/go_boilerplate/core/types"
+	"github.com/{{cookiecutter.github_username}}/{{cookiecutter.package_name}}/core/types"
 	"runtime"
 )
 

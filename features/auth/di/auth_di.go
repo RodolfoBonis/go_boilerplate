@@ -1,9 +1,9 @@
 package di
 
 import (
-	"github.com/RodolfoBonis/go_boilerplate/core/config"
-	"github.com/RodolfoBonis/go_boilerplate/core/services"
-	"github.com/RodolfoBonis/go_boilerplate/features/auth/domain/usecases"
+	"github.com/{{cookiecutter.github_username}}/{{cookiecutter.package_name}}/core/config"
+	"github.com/{{cookiecutter.github_username}}/{{cookiecutter.package_name}}/core/services"
+	"github.com/{{cookiecutter.github_username}}/{{cookiecutter.package_name}}/features/auth/domain/usecases"
 )
 
 func AuthInjection() usecases.AuthUseCase {

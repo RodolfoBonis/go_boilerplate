@@ -1,10 +1,10 @@
 package usecases
 
 import (
-	"github.com/RodolfoBonis/go_boilerplate/core/errors"
-	"github.com/RodolfoBonis/go_boilerplate/core/logger"
-	"github.com/RodolfoBonis/go_boilerplate/features/auth/domain/entities"
 	"github.com/gin-gonic/gin"
+	"github.com/{{cookiecutter.github_username}}/{{cookiecutter.package_name}}/core/errors"
+	"github.com/{{cookiecutter.github_username}}/{{cookiecutter.package_name}}/core/logger"
+	"github.com/{{cookiecutter.github_username}}/{{cookiecutter.package_name}}/features/auth/domain/entities"
 	"net/http"
 	"strings"
 )

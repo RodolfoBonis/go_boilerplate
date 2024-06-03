@@ -1,4 +1,4 @@
-module github.com/RodolfoBonis/go_boilerplate
+module github.com/{{cookiecutter.github_username}}/{{cookiecutter.package_name}}
 
 go 1.20
 
