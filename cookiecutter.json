@@ -1,4 +1,8 @@
 {
 		"package_name": "go_boilerplate",
-		"github_username": "RodolfoBonis"
+		"github_username": "RodolfoBonis",
+		"_copy_without_render": [
+				".github/*",
+				"docs/*"
+		]
 }
