@@ -79,7 +79,7 @@ jobs:
         uses: aws-actions/amazon-ecr-login@v2
 
       - name: Preset Image Name
-        run: echo "IMAGE_URL=$(echo {% raw %}${{ steps.login-ecr.outputs.registry }}{% endraw %}/${{ github.repository_owner }}/${{ github.event.repository.name }}:${{ env.VERSION }} | tr '[:upper:]' '[:lower:]')" >> $GITHUB_ENV
+        run: echo "IMAGE_URL=$(echo {% raw %}${{ steps.login-ecr.outputs.registry }}{% endraw %}/{% raw %}${{ github.repository_owner }}{% endraw %}/{% raw %}${{ github.event.repository.name }}{% endraw %}:{% raw %}${{ env.VERSION }}{% endraw %} | tr '[:upper:]' '[:lower:]')" >> $GITHUB_ENV
 
       - name: Build and push Docker Image
         uses: docker/build-push-action@v4
