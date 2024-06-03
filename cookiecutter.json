@@ -1,5 +1,5 @@
 {
-		"package_name": "",
+		"package_name": "{{cookiecutter.package_name}}",
 		"github_username": "RodolfoBonis",
 		"_copy_without_render": [
 				"{{cookiecutter.package_name}}/.github/*",
