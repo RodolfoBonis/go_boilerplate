@@ -2,7 +2,9 @@
 		"package_name": "go_boilerplate",
 		"github_username": "RodolfoBonis",
 		"_copy_without_render": [
+				"{{cookiecutter.package_name}}/.github",
 				".github/*",
+				"{{cookiecutter.package_name}}/docs",
 				"docs/*"
 		]
 }
