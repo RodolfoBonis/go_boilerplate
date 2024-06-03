@@ -103,7 +103,7 @@ jobs:
       - name: Create Tag for Release
         id: create_tag
         if: {% raw %}${{ job.status == 'success' }}{% endraw %}
-        run: echo "::set-output name=tag::v${{ env.VERSION }}"
+        run: echo "::set-output name=tag::v{% raw %}${{ env.VERSION }}{% endraw %}"
 
       - name: Download commit messages
         uses: actions/download-artifact@v2
