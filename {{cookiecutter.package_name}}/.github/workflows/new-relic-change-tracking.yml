@@ -1,3 +1,4 @@
+{% raw %}
 name: Change Tracking Marker
 on:
   release:
@@ -19,3 +20,4 @@ jobs:
           guid: ${{ secrets.NEW_RELIC_DEPLOYMENT_ENTITY_GUID }}
           version: "${{ env.RELEASE_VERSION }}"
           user: "${{ github.actor }}"
+  {% endraw %}
