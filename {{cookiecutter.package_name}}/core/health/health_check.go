@@ -17,11 +17,11 @@ func InjectRoute(route *gin.RouterGroup) {
 // @Accept json
 // @Produce json
 // @Success 200 {object} string
-// @Failure 400 {object} utils.HttpError
-// @Failure 401 {object} utils.HttpError
-// @Failure 403 {object} utils.HttpError
-// @Failure 409 {object} utils.HttpError
-// @Failure 500 {object} utils.HttpError
+// @Failure 400 {object} errors.HttpError
+// @Failure 401 {object} errors.HttpError
+// @Failure 403 {object} errors.HttpError
+// @Failure 409 {object} errors.HttpError
+// @Failure 500 {object} errors.HttpError
 // @Router /health_check [get]
 func healthCheck(context *gin.Context) {
 	context.String(http.StatusOK, "This Service is Healthy")

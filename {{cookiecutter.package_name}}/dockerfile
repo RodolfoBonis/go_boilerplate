@@ -1,19 +1,58 @@
-FROM golang:1.19.2-alpine as build-env
+FROM golang:1.22.1-alpine as build-env
 
-ENV CGO_ENABLE 0
+RUN apk add --no-cache git ca-certificates
+
+ARG GITHUB_TOKEN
+ARG VERSION=unknown
+ENV CGO_ENABLED=0 GO111MODULE=on GOOS=linux TOKEN=$GITHUB_TOKEN VERSION=${VERSION}
+
+RUN git config --global url."https://${TOKEN}:x-oauth-basic@github.com/".insteadOf "https://github.com/"
 
 WORKDIR /go/src/github.com/{{cookiecutter.github_username}}/{{cookiecutter.package_name}}/
+
+COPY go.mod /go/src/github.com/{{cookiecutter.github_username}}/{{cookiecutter.package_name}}/
+COPY go.sum /go/src/github.com/{{cookiecutter.github_username}}/{{cookiecutter.package_name}}/
+
+RUN go mod download
+
+RUN go install github.com/swaggo/swag/cmd/swag@v1.8.12
+
 ADD . /go/src/github.com/{{cookiecutter.github_username}}/{{cookiecutter.package_name}}/
+
+COPY . ./
+
+
+FROM golang:1.22.1 as builder
+
+ARG GITHUB_TOKEN
+ARG VERSION=unknown
+ENV CGO_ENABLED=0 GO111MODULE=on GOOS=linux TOKEN=$GITHUB_TOKEN VERSION=${VERSION}
+
+WORKDIR /go/src/github.com/{{cookiecutter.github_username}}/{{cookiecutter.package_name}}/
+
+COPY --from=build-env /go/src/github.com/{{cookiecutter.github_username}}/{{cookiecutter.package_name}} /go/src/github.com/{{cookiecutter.github_username}}/{{cookiecutter.package_name}}/
+
+COPY --from=build-env /go/bin/swag /
+
+RUN /swag init
+
+RUN git config --global url."https://${TOKEN}:x-oauth-basic@github.com/".insteadOf "https://github.com/"
+
+RUN go env -w GOPRIVATE=github.com/RodolfoBonis/go_key_guardian
 
 RUN go build -o {{cookiecutter.package_name}} -v /go/src/github.com/{{cookiecutter.github_username}}/{{cookiecutter.package_name}}/
 
 COPY . ./
 
-FROM alpine:3.15
+FROM alpine:3.15 AS production
+
+ARG GITHUB_TOKEN
+ARG VERSION=unknown
+ENV VERSION=${VERSION}
 
 WORKDIR /go/src/github.com/{{cookiecutter.github_username}}/{{cookiecutter.package_name}}/
 
-COPY --from=build-env /go/src/github.com/{{cookiecutter.github_username}}/{{cookiecutter.package_name}}/{{cookiecutter.package_name}} /
+COPY --from=builder /go/src/github.com/{{cookiecutter.github_username}}/{{cookiecutter.package_name}}/{{cookiecutter.package_name}} /
 
 CMD ["/{{cookiecutter.package_name}}"]
 
