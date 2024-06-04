@@ -5,7 +5,7 @@ ENV CGO_ENABLE 0
 WORKDIR /go/src/github.com/{{cookiecutter.github_username}}/{{cookiecutter.package_name}}/
 ADD . /go/src/github.com/{{cookiecutter.github_username}}/{{cookiecutter.package_name}}/
 
-RUN go build -o go_boilerplate -v /go/src/github.com/{{cookiecutter.github_username}}/{{cookiecutter.package_name}}/
+RUN go build -o {{cookiecutter.package_name}} -v /go/src/github.com/{{cookiecutter.github_username}}/{{cookiecutter.package_name}}/
 
 COPY . ./
 
@@ -13,8 +13,8 @@ FROM alpine:3.15
 
 WORKDIR /go/src/github.com/{{cookiecutter.github_username}}/{{cookiecutter.package_name}}/
 
-COPY --from=build-env /go/src/github.com/{{cookiecutter.github_username}}/{{cookiecutter.package_name}}/go_boilerplate /
+COPY --from=build-env /go/src/github.com/{{cookiecutter.github_username}}/{{cookiecutter.package_name}}/{{cookiecutter.package_name}} /
 
-CMD ["/go_boilerplate"]
+CMD ["/{{cookiecutter.package_name}}"]
 
 EXPOSE 8000
