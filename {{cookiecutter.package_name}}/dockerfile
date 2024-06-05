@@ -40,6 +40,8 @@ RUN git config --global url."https://${TOKEN}:x-oauth-basic@github.com/".instead
 
 RUN go env -w GOPRIVATE=github.com/RodolfoBonis/go_key_guardian
 
+RUN go get github.com/RodolfoBonis/go_key_guardian
+
 RUN go build -o {{cookiecutter.package_name}} -v /go/src/github.com/{{cookiecutter.github_username}}/{{cookiecutter.package_name}}/
 
 COPY . ./
