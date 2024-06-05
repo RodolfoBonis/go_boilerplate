@@ -56,4 +56,4 @@ COPY --from=builder /go/src/github.com/{{cookiecutter.github_username}}/{{cookie
 
 CMD ["/{{cookiecutter.package_name}}"]
 
-EXPOSE 8000
+EXPOSE {{cookiecutter.application_port}}
