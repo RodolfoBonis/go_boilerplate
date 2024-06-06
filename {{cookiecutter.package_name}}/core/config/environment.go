@@ -67,7 +67,7 @@ func EnvDBName() string {
 }
 
 func EnvironmentConfig() string {
-	return GetEnv("BOILERPLATE_ENV", entities.Environment.Development)
+	return GetEnv("ENV", entities.Environment.Development)
 }
 
 func EnvServiceName() string {
