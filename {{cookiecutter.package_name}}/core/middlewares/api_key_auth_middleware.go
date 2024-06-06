@@ -8,7 +8,7 @@ import (
 	"github.com/{{cookiecutter.github_username}}/{{cookiecutter.package_name}}/core/logger"
 )
 
-func Protect(handler gin.HandlerFunc) gin.HandlerFunc {
+func ProtectWithApiKey(handler gin.HandlerFunc) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		accessToken := c.GetHeader("X-Api-Key")
 
