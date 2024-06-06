@@ -67,19 +67,16 @@ jobs:
         env:
           GITHUB_TOKEN: {% raw %}${{ secrets.GH_TOKEN }}{% endraw %}
 
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v4
-        with:
-          aws-access-key-id: {% raw %}${{ secrets.AWS_ACCESS_KEY_ID }}{% endraw %}
-          aws-secret-access-key: {% raw %}${{ secrets.AWS_SECRET_ACCESS_KEY }}{% endraw %}
-          aws-region: {% raw %}${{ secrets.AWS_REGION }}{% endraw %}
 
-      - name: Login to Amazon ECR
-        id: login-ecr
-        uses: aws-actions/amazon-ecr-login@v2
+      - name: Login to Private Docker Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ secrets.REGISTRY_URL }}
+          username: ${{ secrets.REGISTRY_USERNAME }}
+          password: ${{ secrets.REGISTRY_PASSWORD }}
 
       - name: Preset Image Name
-        run: echo "IMAGE_URL=$(echo {% raw %}${{ steps.login-ecr.outputs.registry }}{% endraw %}/{% raw %}${{ github.repository_owner }}{% endraw %}/{% raw %}${{ github.event.repository.name }}{% endraw %}:{% raw %}${{ env.VERSION }}{% endraw %} | tr '[:upper:]' '[:lower:]')" >> $GITHUB_ENV
+        run: echo "IMAGE_URL=$(echo {% raw %}${{ secrets.REGISTRY_URL }}{% endraw %}/{% raw %}${{ github.repository_owner }}{% endraw %}/{% raw %}${{ github.event.repository.name }}{% endraw %}:{% raw %}${{ env.VERSION }}{% endraw %} | tr '[:upper:]' '[:lower:]')" >> $GITHUB_ENV
 
       - name: Build and push Docker Image
         uses: docker/build-push-action@v4

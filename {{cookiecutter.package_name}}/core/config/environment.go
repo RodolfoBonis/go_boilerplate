@@ -38,6 +38,10 @@ func EnvNewRelic() entities.NewRelicEnv {
 	}
 }
 
+func EnvServiceId() string {
+	return GetEnv("SERVICE_ID", "")
+}
+
 func EnvSentryDSN() string {
 	return GetEnv("SENTRY_DSN", "")
 }
