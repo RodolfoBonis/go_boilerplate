@@ -71,9 +71,9 @@ jobs:
       - name: Login to Private Docker Registry
         uses: docker/login-action@v3
         with:
-          registry: ${{ secrets.REGISTRY_URL }}
-          username: ${{ secrets.REGISTRY_USERNAME }}
-          password: ${{ secrets.REGISTRY_PASSWORD }}
+          registry: {% raw %}${{ secrets.REGISTRY_URL }}{% endraw %}
+          username: {% raw %}${{ secrets.REGISTRY_USERNAME }}{% endraw %}
+          password: {% raw %}${{ secrets.REGISTRY_PASSWORD }}{% endraw %}
 
       - name: Preset Image Name
         run: echo "IMAGE_URL=$(echo {% raw %}${{ secrets.REGISTRY_URL }}{% endraw %}/{% raw %}${{ github.repository_owner }}{% endraw %}/{% raw %}${{ github.event.repository.name }}{% endraw %}:{% raw %}${{ env.VERSION }}{% endraw %} | tr '[:upper:]' '[:lower:]')" >> $GITHUB_ENV
