@@ -71,7 +71,7 @@ jobs:
       - name: Login to Private Docker Registry
         uses: docker/login-action@v3
         with:
-          registry: {% raw %}${{ secrets.REGISTRY_URL }}{% endraw %}
+          registry: {% raw %}https://${{ secrets.REGISTRY_URL }}{% endraw %}
           username: {% raw %}${{ secrets.REGISTRY_USERNAME }}{% endraw %}
           password: {% raw %}${{ secrets.REGISTRY_PASSWORD }}{% endraw %}
 
