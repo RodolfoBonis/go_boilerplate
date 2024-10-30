@@ -1,1 +1,1 @@
-# GO API BOILERPLATE
+# {{cookiecutter.package_name}}

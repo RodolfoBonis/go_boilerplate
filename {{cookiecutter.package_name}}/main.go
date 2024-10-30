@@ -73,8 +73,8 @@ func init() {
 	// Use this for open connection with RabbitMQ
 	// services.StartAmqpConnection()
 
-	docs.SwaggerInfo.Title = "Go API Boilerplate"
-	docs.SwaggerInfo.Description = "A Boilerplate to create go services using gin gonic"
+	docs.SwaggerInfo.Title = "{{cookiecutter.package_name}}"
+	docs.SwaggerInfo.Description = "{{cookiecutter.application_description}}"
 	docs.SwaggerInfo.Version = "0.0.1"
 	docs.SwaggerInfo.Host = fmt.Sprintf("localhost:%s", config.EnvPort())
 	docs.SwaggerInfo.BasePath = "/v1"
