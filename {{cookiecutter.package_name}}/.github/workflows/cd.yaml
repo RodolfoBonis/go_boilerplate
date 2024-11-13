@@ -134,7 +134,7 @@ jobs:
           draft: false
           prerelease: false
 
-      - if: ${{ job.status == 'success' }}
+      - if: {% raw %}${{ job.status == 'success' }}{% endraw %}
         name: Send Message via Telegram
         uses: appleboy/telegram-action@master
         with:
