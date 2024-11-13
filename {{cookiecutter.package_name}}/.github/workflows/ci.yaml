@@ -126,7 +126,7 @@ jobs:
 
       - name: Create or update a file to ensure changes
         if: {% raw %}${{ steps.govulncheck.outcome == 'failure' && github.ref == 'refs/heads/main' }}{% endraw %}
-        run: echo "Vulnerabilities found on {% raw %}$(date)" > vulnerabilities.txt
+        run: echo "Vulnerabilities found on {% raw %}$(date){% endraw %}" > vulnerabilities.txt
 
       - name: Create branch and PR if vulnerabilities are found on main
         if: {% raw %}${{ steps.govulncheck.outcome == 'failure' && github.ref == 'refs/heads/main' }}{% endraw %}
