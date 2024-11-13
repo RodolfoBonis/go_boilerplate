@@ -16,9 +16,9 @@ jobs:
 
       - name: Run script
         env:
-          OPENAI_API_KEY: ${{ secrets.OPENAI_TOKEN }}
-          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
-          REPO_NAME: ${{ github.repository }}
-          PR_NUMBER: ${{ github.event.pull_request.number }}
+          OPENAI_API_KEY: {% raw %}${{ secrets.OPENAI_TOKEN }}{% endraw %}
+          GITHUB_TOKEN: {% raw %}${{ secrets.GH_TOKEN }}{% endraw %}
+          REPO_NAME: {% raw %}${{ github.repository }}{% endraw %}
+          PR_NUMBER: {% raw %}${{ github.event.pull_request.number }}{% endraw %}
         run: |
           python .config/scripts/generate_pr_description.py

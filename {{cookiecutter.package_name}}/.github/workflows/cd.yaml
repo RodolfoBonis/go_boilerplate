@@ -9,9 +9,9 @@ on:
 jobs:
   get_commit_messages:
     runs-on: ubuntu-latest
-    if: ${{ github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.head_branch == 'main' }}
+    if: {% raw %}${{ github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.head_branch == 'main' }}{% endraw %}
     env:
-      GH_TOKEN: ${{ secrets.GH_TOKEN }}
+      GH_TOKEN: {% raw %}${{ secrets.GH_TOKEN }}{% endraw %}
     steps:
       - name: Install GitHub CLI
         run: sudo apt-get install gh -y
@@ -19,20 +19,20 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v4
         with:
-          token: ${{ secrets.GH_TOKEN }}
+          token: {% raw %}${{ secrets.GH_TOKEN }}{% endraw %}
           fetch-depth: 0
 
       - name: Get last merged PR
         id: lastpr
         run: |
-          pr_number=$(gh pr list --state merged --limit 1 --json number --jq '.[0].number')
+          {% raw %}pr_number=$(gh pr list --state merged --limit 1 --json number --jq '.[0].number'){% endraw %}
           echo "::set-output name=pr_number::$pr_number"
 
       - name: Get commit messages from last PR
         id: log
         run: |
-          pr_number=${{ steps.lastpr.outputs.pr_number }}
-          messages=$(gh pr view $pr_number --json commits --jq '.commits[].messageHeadline')
+          pr_number={% raw %}${{ steps.lastpr.outputs.pr_number }}{% endraw %}
+          {% raw %}messages=$(gh pr view $pr_number --json commits --jq '.commits[].messageHeadline'){% endraw %}
           echo "$messages" > commit_messages.txt
         shell: bash
 
@@ -44,7 +44,7 @@ jobs:
 
   build_and_deploy:
     needs: get_commit_messages
-    runs-on: ${{ matrix.os }}
+    runs-on: {% raw %}${{ matrix.os }}{% endraw %}
 
     strategy:
       matrix:
@@ -54,7 +54,7 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v4
         with:
-          token: ${{ secrets.GH_TOKEN }}
+          token: {% raw %}${{ secrets.GH_TOKEN }}{% endraw %}
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
@@ -63,7 +63,7 @@ jobs:
         run: |
           chmod +x ./.config/scripts/increment_version.sh
           ./.config/scripts/increment_version.sh
-          echo "VERSION=$(cat version.txt)" >> $GITHUB_ENV
+          {% raw %}echo "VERSION=$(cat version.txt)" >> $GITHUB_ENV{% endraw %}
 
       - name: Add, commit and push version increment
         uses: EndBug/add-and-commit@v9
@@ -73,21 +73,21 @@ jobs:
           message: "Increment version"
           add: "version.txt"
         env:
-          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+          GITHUB_TOKEN: {% raw %}${{ secrets.GH_TOKEN }}{% endraw %}
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{ secrets.AWS_REGION }}
+          aws-access-key-id: {% raw %}${{ secrets.AWS_ACCESS_KEY_ID }}{% endraw %}
+          aws-secret-access-key: {% raw %}${{ secrets.AWS_SECRET_ACCESS_KEY }}{% endraw %}
+          aws-region: {% raw %}${{ secrets.AWS_REGION }}{% endraw %}
 
       - name: Login to Amazon ECR
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v2
 
       - name: Preset Image Name
-        run: echo "IMAGE_URL=$(echo ${{ steps.login-ecr.outputs.registry }}/${{ github.repository_owner }}/${{ github.event.repository.name }}:${{ env.VERSION }} | tr '[:upper:]' '[:lower:]')" >> $GITHUB_ENV
+        run: {% raw %}echo "IMAGE_URL=$(echo ${{ steps.login-ecr.outputs.registry }}/${{ github.repository_owner }}/${{ github.event.repository.name }}:${{ env.VERSION }} | tr '[:upper:]' '[:lower:]')" >> $GITHUB_ENV{% endraw %}
 
       - name: Build and push Docker Image
         uses: docker/build-push-action@v6
@@ -95,23 +95,23 @@ jobs:
           context: .
           file: ./Dockerfile
           push: true
-          tags: ${{ env.IMAGE_URL }}
+          tags: {% raw %}${{ env.IMAGE_URL }}{% endraw %}
           build-args: |
-            "GITHUB_TOKEN=${{ secrets.GH_TOKEN }}"
-            "VERSION=${{ env.VERSION }}"
+            "GITHUB_TOKEN={% raw %}${{ secrets.GH_TOKEN }}{% endraw %}"
+            "VERSION={% raw %}${{ env.VERSION }}{% endraw %}"
 
       - name: Deploy Image to CapRover
         uses: caprover/deploy-from-github@v1.1.2
         with:
-          server: ${{ secrets.CAPROVER_SERVER }}
-          app: ${{ secrets.APP_NAME }}
-          token: ${{ secrets.APP_TOKEN }}
-          image: ${{ env.IMAGE_URL }}
+          server: {% raw %}${{ secrets.CAPROVER_SERVER }}{% endraw %}
+          app: {% raw %}${{ secrets.APP_NAME }}{% endraw %}
+          token: {% raw %}${{ secrets.APP_TOKEN }}{% endraw %}
+          image: {% raw %}${{ env.IMAGE_URL }}{% endraw %}
 
       - name: Create Tag for Release
         id: create_tag
-        if: ${{ job.status == 'success' }}
-        run: echo "::set-output name=tag::v${{ env.VERSION }}"
+        if: {% raw %}${{ job.status == 'success' }}{% endraw %}
+        run: echo "::set-output name=tag::v{% raw %}${{ env.VERSION }}{% endraw %}"
 
       - name: Download commit messages
         uses: actions/download-artifact@v4
@@ -121,13 +121,13 @@ jobs:
 
       - name: Create Release
         id: create_release
-        if: ${{ job.status == 'success' }}
+        if: {% raw %}${{ job.status == 'success' }}{% endraw %}
         uses: actions/create-release@v1
         env:
-          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+          GITHUB_TOKEN: {% raw %}${{ secrets.GH_TOKEN }}{% endraw %}
         with:
-          tag_name: ${{ steps.create_tag.outputs.tag }}
-          release_name: Release ${{ env.VERSION }}
+          tag_name: {% raw %}${{ steps.create_tag.outputs.tag }}{% endraw %}
+          release_name: Release {% raw %}${{ env.VERSION }}{% endraw %}
           body: |
             Changes in this Release:
           body_path: commit_messages.txt
@@ -138,28 +138,28 @@ jobs:
         name: Send Message via Telegram
         uses: appleboy/telegram-action@master
         with:
-          token: ${{ secrets.BOTTOKEN }}
-          to: ${{ secrets.CHAT_ID }}
+          token: {% raw %}${{ secrets.BOTTOKEN }}{% endraw %}
+          to: {% raw %}${{ secrets.CHAT_ID }}{% endraw %}
           message: |
-            ✅ ${{ github.actor }} created new release:
-            Repository: ${{ github.repository }}
-            Release Notes: [Release ${{ env.VERSION }}](https://github.com/${{ github.repository }}/releases/tag/${{ steps.create_tag.outputs.tag }})
-            Build Status: ${{ job.status }}
+            ✅ {% raw %}${{ github.actor }}{% endraw %} created new release:
+            Repository: {% raw %}${{ github.repository }}{% endraw %}
+            Release Notes: [Release {% raw %}${{ env.VERSION }}{% endraw %}](https://github.com/{% raw %}${{ github.repository }}{% endraw %}/releases/tag/{% raw %}${{ steps.create_tag.outputs.tag }}{% endraw %})
+            Build Status: {% raw %}${{ job.status }}{% endraw %}
 
             Good job!
 
-      - if: ${{ job.status != 'success' }}
+      - if: {% raw %}${{ job.status != 'success' }}{% endraw %}
         name: Send Message via Telegram
         uses: appleboy/telegram-action@master
         with:
-          token: ${{ secrets.BOTTOKEN }}
-          to: ${{ secrets.CHAT_ID }}
+          token: {% raw %}${{ secrets.BOTTOKEN }}{% endraw %}
+          to: {% raw %}${{ secrets.CHAT_ID }}{% endraw %}
           message: |
             ⛔️ There was an error when build project
-            ${{ github.actor }} created commit:
-            Repository: ${{ github.repository }}
-            See changes: https://github.com/${{ github.repository }}/commit/${{ github.sha }}
-            Build Status: ${{ job.status }}
+            {% raw %}${{ github.actor }}{% endraw %} created commit:
+            Repository: {% raw %}${{ github.repository }}{% endraw %}
+            See changes: https://github.com/{% raw %}${{ github.repository }}{% endraw %}/commit/{% raw %}${{ github.sha }}{% endraw %}
+            Build Status: {% raw %}${{ job.status }}{% endraw %}
             
             Changelog:
-            ${{ env.MESSAGES }}
+            {% raw %}${{ env.MESSAGES }}{% endraw %}
