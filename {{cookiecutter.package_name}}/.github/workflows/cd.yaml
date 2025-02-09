@@ -204,12 +204,13 @@ jobs:
 
       - if: { % raw % }${{ needs.build_and_deploy.result == 'success' }}{% endraw %}
         name: Send Success Message via Telegram
-        uses: appleboy/telegram-action@master
+        uses: akeylimepie/telegram-action@main
         with:
           token: { % raw % }${{ secrets.BOTTOKEN }}{% endraw %}
-          to: { % raw % }${{ secrets.CHAT_ID }}{% endraw %}
-          format: 'markdown'
-          message: |
+          chat_id: { % raw % }${{ secrets.CHAT_ID }}{% endraw %}
+          parse_mode: 'markdown'
+          message_thread_id: { % raw % }${{ secrets.THREAD_ID }}{% endraw %}
+          text: |
             🚀 *Deployment Successful!*
             
             *New Release Details:*
@@ -227,12 +228,13 @@ jobs:
 
       - if: { % raw % }${{ needs.build_and_deploy.result != 'success' }}{% endraw %}
         name: Send Error Message via Telegram
-        uses: appleboy/telegram-action@master
+        uses: akeylimepie/telegram-action@main
         with:
           token: { % raw % }${{ secrets.BOTTOKEN }}{% endraw %}
-          to: { % raw % }${{ secrets.CHAT_ID }}{% endraw %}
-          format: 'markdown'
-          message: |
+          chat_id: { % raw % }${{ secrets.CHAT_ID }}{% endraw %}
+          parse_mode: 'markdown'
+          message_thread_id: { % raw % }${{ secrets.THREAD_ID }}{% endraw %}
+          text: |
             ❌ *Deployment Failed!*
             
             *Error Details:*
