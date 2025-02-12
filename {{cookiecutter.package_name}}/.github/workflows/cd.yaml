@@ -13,72 +13,72 @@ on:
 jobs:
   get_commit_messages:
     runs-on: ubuntu-latest
-    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    if: {% raw %}${{ github.event.workflow_run.conclusion == 'success' }}{% endraw %}
     env:
-      GH_TOKEN: ${{ secrets.GH_TOKEN }}
+      GH_TOKEN: { % raw % }${{ secrets.GH_TOKEN }}{% endraw %}
     steps:
         - name: Install GitHub CLI
           run: sudo apt-get install gh -y
 
-        - name: Check out repository
-          uses: actions/checkout@v4
-          with:
-            token: ${{ secrets.GH_TOKEN }}
-            fetch-depth: 0
+          - name: Check out repository
+            uses: actions/checkout@v4
+            with:
+              token: { % raw % }${{ secrets.GH_TOKEN }}{% endraw %}
+              fetch-depth: 0
 
-        - name: Get commit information
-          id: commit_info
-          run: |
-            # Tenta pegar informações da última PR mesclada
-            pr_info=$(gh pr list --state merged --limit 1 --json number,title,body,mergeCommit)
-            
-            # Verifica se encontrou uma PR
-            if [ "$(echo "$pr_info" | jq '. | length')" -gt 0 ] && [ "$(echo "$pr_info" | jq -r '.[0].mergeCommit.oid')" = "$(git rev-parse HEAD)" ]; then
-              # É uma PR mesclada
-              pr_number=$(echo "$pr_info" | jq -r '.[0].number')
-              echo "🔄 Pull Request #$pr_number" > commit_messages.txt
-              echo "$(echo "$pr_info" | jq -r '.[0].title')" >> commit_messages.txt
-              echo "" >> commit_messages.txt
-            
-              pr_body=$(echo "$pr_info" | jq -r '.[0].body')
-              if [ "$pr_body" != "null" ] && [ ! -z "$pr_body" ]; then
-                echo "📝 Description:" >> commit_messages.txt
-                echo "$pr_body" >> commit_messages.txt
+          - name: Get commit information
+            id: commit_info
+            run: |
+              # Tenta pegar informações da última PR mesclada
+              pr_info=$(gh pr list --state merged --limit 1 --json number,title,body,mergeCommit)
+              
+              # Verifica se encontrou uma PR
+              if [ "$(echo "$pr_info" | jq '. | length')" -gt 0 ] && [ "$(echo "$pr_info" | jq -r '.[0].mergeCommit.oid')" = "$(git rev-parse HEAD)" ]; then
+                # É uma PR mesclada
+                pr_number=$(echo "$pr_info" | jq -r '.[0].number')
+                echo "🔄 Pull Request #$pr_number" > commit_messages.txt
+                echo "$(echo "$pr_info" | jq -r '.[0].title')" >> commit_messages.txt
                 echo "" >> commit_messages.txt
+              
+                pr_body=$(echo "$pr_info" | jq -r '.[0].body')
+                if [ "$pr_body" != "null" ] && [ ! -z "$pr_body" ]; then
+                  echo "📝 Description:" >> commit_messages.txt
+                  echo "$pr_body" >> commit_messages.txt
+                  echo "" >> commit_messages.txt
+                fi
+              
+                echo "📦 Commits:" >> commit_messages.txt
+                gh pr view $pr_number --json commits --jq '.commits[] | "• " + .messageHeadline + if .messageBody then "\n  " + (.messageBody | gsub("\n"; "\n  ")) else "" end' >> commit_messages.txt
+              else
+                # É um push direto na main
+                echo "📦 Direct Push to Main" > commit_messages.txt
+                echo "" >> commit_messages.txt
+              
+                # Pega o último commit
+                last_commit=$(git log -1 --pretty=format:"%s%n%n%b")
+                echo "• $last_commit" >> commit_messages.txt
+              
+                # Se houver mais commits no push, adiciona eles também
+                additional_commits=$(git log HEAD~1..HEAD^ --pretty=format:"• %s%n  %b")
+                if [ ! -z "$additional_commits" ]; then
+                  echo "$additional_commits" >> commit_messages.txt
+                fi
               fi
-            
-              echo "📦 Commits:" >> commit_messages.txt
-              gh pr view $pr_number --json commits --jq '.commits[] | "• " + .messageHeadline + if .messageBody then "\n  " + (.messageBody | gsub("\n"; "\n  ")) else "" end' >> commit_messages.txt
-            else
-              # É um push direto na main
-              echo "📦 Direct Push to Main" > commit_messages.txt
-              echo "" >> commit_messages.txt
-            
-              # Pega o último commit
-              last_commit=$(git log -1 --pretty=format:"%s%n%n%b")
-              echo "• $last_commit" >> commit_messages.txt
-            
-              # Se houver mais commits no push, adiciona eles também
-              additional_commits=$(git log HEAD~1..HEAD^ --pretty=format:"• %s%n  %b")
-              if [ ! -z "$additional_commits" ]; then
-                echo "$additional_commits" >> commit_messages.txt
-              fi
-            fi
 
-        - name: Upload commit messages
-          uses: actions/upload-artifact@v4
-          with:
-            name: commit-messages
-            path: commit_messages.txt
+          - name: Upload commit messages
+            uses: actions/upload-artifact@v4
+            with:
+              name: commit-messages
+              path: commit_messages.txt
 
 
 
   build_and_deploy:
     needs: get_commit_messages
-    runs-on: ${{ matrix.os }}
+    runs-on: {% raw %}${{ matrix.os }}{% endraw %}
     outputs:
-      VERSION: ${{ env.VERSION }}
-      IMAGE_URL: ${{ env.IMAGE_URL }}
+      VERSION: {% raw %}${{ env.VERSION }}{% endraw %}
+      IMAGE_URL: {% raw %}${{ env.IMAGE_URL }}{% endraw %}
     strategy:
       matrix:
         os: [ubuntu-latest]
@@ -87,7 +87,7 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v4
         with:
-          token: ${{ secrets.GH_TOKEN }}
+          token: {% raw %}${{ secrets.GH_TOKEN }}{% endraw %}
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
@@ -99,7 +99,7 @@ jobs:
         run: |
           chmod +x ./.config/scripts/increment_version.sh
           ./.config/scripts/increment_version.sh
-          echo "VERSION=$(cat version.txt)" >> $GITHUB_ENV
+          {% raw %}echo "VERSION=$(cat version.txt)" >> $GITHUB_ENV{% endraw %}
 
       - name: Add, commit and push version increment
         uses: EndBug/add-and-commit@v9
@@ -109,21 +109,21 @@ jobs:
           message: "Increment version"
           add: "version.txt"
         env:
-          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+          GITHUB_TOKEN: {% raw %}${{ secrets.GH_TOKEN }}{% endraw %}
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{ secrets.AWS_REGION }}
+          aws-access-key-id: {% raw %}${{ secrets.AWS_ACCESS_KEY_ID }}{% endraw %}
+          aws-secret-access-key: {% raw %}${{ secrets.AWS_SECRET_ACCESS_KEY }}{% endraw %}
+          aws-region: {% raw %}${{ secrets.AWS_REGION }}{% endraw %}
 
       - name: Login to Amazon ECR
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v2
 
       - name: Preset Image Name
-        run: echo "IMAGE_URL=$(echo ${{ steps.login-ecr.outputs.registry }}/${{ github.repository_owner }}/${{ github.event.repository.name }}:${{ env.VERSION }} | tr '[:upper:]' '[:lower:]')" >> $GITHUB_ENV
+        run: {% raw %}echo "IMAGE_URL=$(echo ${{ steps.login-ecr.outputs.registry }}/${{ github.repository_owner }}/${{ github.event.repository.name }}:${{ env.VERSION }} | tr '[:upper:]' '[:lower:]')" >> $GITHUB_ENV{% endraw %}
 
       - name: Build and push Docker Image
         uses: docker/build-push-action@v6
@@ -131,10 +131,10 @@ jobs:
           context: .
           file: ./Dockerfile
           push: true
-          tags: ${{ env.IMAGE_URL }}
+          tags: {% raw %}${{ env.IMAGE_URL }}{% endraw %}
           build-args: |
-            "GITHUB_TOKEN=${{ secrets.GH_TOKEN }}"
-            "VERSION=${{ env.VERSION }}"
+            "GITHUB_TOKEN={% raw %}${{ secrets.GH_TOKEN }}{% endraw %}"
+            "VERSION={% raw %}${{ env.VERSION }}{% endraw %}"
 
       - name: Checkout k3s manifest repository
         uses: actions/checkout@master
@@ -142,26 +142,26 @@ jobs:
           repository: RodolfoBonis/k3s-apps
           ref: main
           path: k3s-manifest
-          token: ${{ secrets.GH_TOKEN }}
+          token: {% raw %}${{ secrets.GH_TOKEN }}{% endraw %}
 
       - name: Update k3s manifest with new image version
         run: |
           cd k3s-manifest
-          yq e -i ".spec.template.spec.containers[0].image = \"${{ env.IMAGE_URL }}\"" ./applications/{{cookiecutter.package_name}}/service/{{cookiecutter.package_name}}-deployment.yaml
+          yq e -i ".spec.template.spec.containers[0].image = \"{% raw %}${{ env.IMAGE_URL }}{% endraw %}\"" ./applications/{{cookiecutter.package_name}}/service/{{cookiecutter.package_name}}-deployment.yaml
           git config --global user.name "GitHub Actions"
           git config --global user.email "actions@github.com"
           git add ./applications/{{cookiecutter.package_name}}/service/{{cookiecutter.package_name}}-deployment.yaml
-          git commit -m "Update image to ${{ env.IMAGE_URL }}"
+          git commit -m "Update image to {% raw %}${{ env.IMAGE_URL }}{% endraw %}"
           git push
 
       - name: Sync ArgoCD Application
         run: |
-          argocd app sync {{cookiecutter.package_name}} --grpc-web --server ${{ secrets.ARGOCD_SERVER }} --auth-token ${{ secrets.ARGOCD_TOKEN }}
+          argocd app sync {{cookiecutter.package_name}} --grpc-web --server {% raw %}${{ secrets.ARGOCD_SERVER }}{% endraw %} --auth-token {% raw %}${{ secrets.ARGOCD_TOKEN }}{% endraw %}
 
       - name: Create Tag for Release
         id: create_tag
-        if: ${{ job.status == 'success' }}
-        run: echo "::set-output name=tag::v${{ env.VERSION }}"
+        if: {% raw %}${{ job.status == 'success' }}{% endraw %}
+        run: echo "::set-output name=tag::v{% raw %}${{ env.VERSION }}{% endraw %}"
 
       - name: Download commit messages
         uses: actions/download-artifact@v4
@@ -171,13 +171,13 @@ jobs:
 
       - name: Create Release
         id: create_release
-        if: ${{ job.status == 'success' }}
+        if: {% raw %}${{ job.status == 'success' }}{% endraw %}
         uses: actions/create-release@v1
         env:
-          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+          GITHUB_TOKEN: {% raw %}${{ secrets.GH_TOKEN }}{% endraw %}
         with:
-          tag_name: ${{ steps.create_tag.outputs.tag }}
-          release_name: Release ${{ env.VERSION }}
+          tag_name: {% raw %}${{ steps.create_tag.outputs.tag }}{% endraw %}
+          release_name: Release {% raw %}${{ env.VERSION }}{% endraw %}
           body: |
             Changes in this Release:
           body_path: commit_messages.txt
@@ -197,59 +197,59 @@ jobs:
 
       - name: Read commit messages
         id: get_messages
-        if: ${{ needs.build_and_deploy.result != 'success' }}
+        if: { % raw % }${{ needs.build_and_deploy.result != 'success' }}{% endraw %}
         run: |
           messages=$(cat commit_messages.txt)
           echo "messages=$(echo "$messages" | jq -R -s -c 'split("\n")')" >> $GITHUB_OUTPUT
 
-      - if: ${{ needs.build_and_deploy.result == 'success' }}
+      - if: { % raw % }${{ needs.build_and_deploy.result == 'success' }}{% endraw %}
         name: Send Success Message via Telegram
         uses: akeylimepie/telegram-action@main
         with:
-          token: ${{ secrets.BOTTOKEN }}
-          chat_id: ${{ secrets.CHAT_ID }}
+          token: { % raw % }${{ secrets.BOTTOKEN }}{% endraw %}
+          chat_id: { % raw % }${{ secrets.CHAT_ID }}{% endraw %}
           parse_mode: 'markdown'
-          message_thread_id: ${{ secrets.THREAD_ID }}
+          message_thread_id: { % raw % }${{ secrets.THREAD_ID }}{% endraw %}
           text: |
             🚀 *Deployment Successful!*
             
             *New Release Details:*
-            • Version: ${{ needs.build_and_deploy.outputs.VERSION }}
-            • Created by: ${{ github.actor }}
-            • Repository: ${{ github.repository }}
+            • Version: {% raw %}${{ needs.build_and_deploy.outputs.VERSION }}{% endraw %}
+            • Created by: {% raw %}${{ github.actor }}{% endraw %}
+            • Repository: {% raw %}${{ github.repository }}{% endraw %}
             
-            📝 *Release Notes:* [Release ${{ needs.build_and_deploy.outputs.VERSION }}](https://github.com/${{ github.repository }}/releases/tag/v${{ needs.build_and_deploy.outputs.VERSION }})
+            📝 *Release Notes:* [Release {% raw %}${{ needs.build_and_deploy.outputs.VERSION }}{% endraw %}](https://github.com/{% raw %}${{ github.repository }}{% endraw %}/releases/tag/v{% raw %}${{ needs.build_and_deploy.outputs.VERSION }}{% endraw %})
             
             ✅ Deployment Status: Success
             🔄 ArgoCD Sync: Completed
-            📦 Image: ${{ needs.build_and_deploy.outputs.IMAGE_URL }}
+            📦 Image: {% raw %}${{ needs.build_and_deploy.outputs.IMAGE_URL }}{% endraw %}
             
             🎉 Deployment completed successfully!
 
-      - if: ${{ needs.build_and_deploy.result != 'success' }}
+      - if: { % raw % }${{ needs.build_and_deploy.result != 'success' }}{% endraw %}
         name: Send Error Message via Telegram
         uses: akeylimepie/telegram-action@main
         with:
-          token: ${{ secrets.BOTTOKEN }}
-          chat_id: ${{ secrets.CHAT_ID }}
+          token: { % raw % }${{ secrets.BOTTOKEN }}{% endraw %}
+          chat_id: { % raw % }${{ secrets.CHAT_ID }}{% endraw %}
           parse_mode: 'markdown'
-          message_thread_id: ${{ secrets.THREAD_ID }}
+          message_thread_id: { % raw % }${{ secrets.THREAD_ID }}{% endraw %}
           text: |
             ❌ *Deployment Failed!*
             
             *Error Details:*
-            • Repository: ${{ github.repository }}
-            • Triggered by: ${{ github.actor }}
-            • Commit: ${{ github.sha }}
+            • Repository: {% raw %}${{ github.repository }}{% endraw %}
+            • Triggered by: {% raw %}${{ github.actor }}{% endraw %}
+            • Commit: {% raw %}${{ github.sha }}{% endraw %}
             
             🔍 *Debug Information:*
-            • Build Status: ${{ needs.build_and_deploy.result }}
-            • Commit URL: https://github.com/${{ github.repository }}/commit/${{ github.sha }}
+            • Build Status: {% raw %}${{ needs.build_and_deploy.result }}{% endraw %}
+            • Commit URL: https://github.com/{% raw %}${{ github.repository }}{% endraw %}/commit/{% raw %}${{ github.sha }}{% endraw %}
             
             📋 *Recent Changes:*
-            ${{ join(fromJSON(steps.get_messages.outputs.messages), '\n') }}
+            {% raw %}${{ join(fromJSON(steps.get_messages.outputs.messages), '\n') }}{% endraw %}
             
-            ⚠️ [Check GitHub Actions Logs](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})
+            ⚠️ [Check GitHub Actions Logs](https://github.com/{% raw %}${{ github.repository }}{% endraw %}/actions/runs/{% raw %}${{ github.run_id }}{% endraw %})
 
 
 
