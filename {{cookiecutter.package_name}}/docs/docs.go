@@ -4,7 +4,7 @@ package docs
 
 import "github.com/swaggo/swag"
 
-const docTemplate = `{
+const docTemplate = `{% raw %}{
     "schemes": {{ marshal .Schemes }},
     "swagger": "2.0",
     "info": {
@@ -288,7 +288,7 @@ const docTemplate = `{
             }
         }
     }
-}`
+}{% endraw %}`
 
 // SwaggerInfo holds exported Swagger Info so clients can modify it
 var SwaggerInfo = &swag.Spec{
