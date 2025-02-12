@@ -15,7 +15,7 @@ jobs:
     runs-on: ubuntu-latest
     if: {% raw %}${{ github.event.workflow_run.conclusion == 'success' }}{% endraw %}
     env:
-      GH_TOKEN: { % raw % }${{ secrets.GH_TOKEN }}{% endraw %}
+        {% raw %}GH_TOKEN: ${{ secrets.GH_TOKEN }}{% endraw %}
     steps:
         - name: Install GitHub CLI
           run: sudo apt-get install gh -y
