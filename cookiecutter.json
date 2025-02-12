@@ -1,6 +1,8 @@
 {
 		"package_name": "go_boilerplate",
 		"github_username": "RodolfoBonis",
+		"application_port": 8000,
+		"application_description": "A simple boilerplate for Go applications",
 		"_copy_without_render": [
 				"{{cookiecutter.package_name}}/.github/*",
 				".github/*",
