@@ -15,7 +15,7 @@ jobs:
     runs-on: ubuntu-latest
     if: {% raw %}${{ github.event.workflow_run.conclusion == 'success' }}{% endraw %}
     env:
-        {% raw %}GH_TOKEN: ${{ secrets.GH_TOKEN }}{% endraw %}
+      GH_TOKEN: {% raw %}${{ secrets.GH_TOKEN }}{% endraw %}
     steps:
         - name: Install GitHub CLI
           run: sudo apt-get install gh -y
@@ -23,7 +23,7 @@ jobs:
           - name: Check out repository
             uses: actions/checkout@v4
             with:
-              token: { % raw % }${{ secrets.GH_TOKEN }}{% endraw %}
+              token: {% raw %}${{ secrets.GH_TOKEN }}{% endraw %}
               fetch-depth: 0
 
           - name: Get commit information
@@ -197,19 +197,19 @@ jobs:
 
       - name: Read commit messages
         id: get_messages
-        if: { % raw % }${{ needs.build_and_deploy.result != 'success' }}{% endraw %}
+        if: {% raw %}${{ needs.build_and_deploy.result != 'success' }}{% endraw %}
         run: |
           messages=$(cat commit_messages.txt)
           echo "messages=$(echo "$messages" | jq -R -s -c 'split("\n")')" >> $GITHUB_OUTPUT
 
-      - if: { % raw % }${{ needs.build_and_deploy.result == 'success' }}{% endraw %}
+      - if: {% raw %}${{ needs.build_and_deploy.result == 'success' }}{% endraw %}
         name: Send Success Message via Telegram
         uses: akeylimepie/telegram-action@main
         with:
-          token: { % raw % }${{ secrets.BOTTOKEN }}{% endraw %}
-          chat_id: { % raw % }${{ secrets.CHAT_ID }}{% endraw %}
+          token: {% raw %}${{ secrets.BOTTOKEN }}{% endraw %}
+          chat_id: {% raw %}${{ secrets.CHAT_ID }}{% endraw %}
           parse_mode: 'markdown'
-          message_thread_id: { % raw % }${{ secrets.THREAD_ID }}{% endraw %}
+          message_thread_id: {% raw %}${{ secrets.THREAD_ID }}{% endraw %}
           text: |
             🚀 *Deployment Successful!*
             
@@ -226,14 +226,14 @@ jobs:
             
             🎉 Deployment completed successfully!
 
-      - if: { % raw % }${{ needs.build_and_deploy.result != 'success' }}{% endraw %}
+      - if: {% raw %}${{ needs.build_and_deploy.result != 'success' }}{% endraw %}
         name: Send Error Message via Telegram
         uses: akeylimepie/telegram-action@main
         with:
-          token: { % raw % }${{ secrets.BOTTOKEN }}{% endraw %}
-          chat_id: { % raw % }${{ secrets.CHAT_ID }}{% endraw %}
+          token: {% raw %}${{ secrets.BOTTOKEN }}{% endraw %}
+          chat_id: {% raw %}${{ secrets.CHAT_ID }}{% endraw %}
           parse_mode: 'markdown'
-          message_thread_id: { % raw % }${{ secrets.THREAD_ID }}{% endraw %}
+          message_thread_id: {% raw %}${{ secrets.THREAD_ID }}{% endraw %}
           text: |
             ❌ *Deployment Failed!*
             
