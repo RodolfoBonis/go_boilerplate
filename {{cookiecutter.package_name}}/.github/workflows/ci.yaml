@@ -142,11 +142,6 @@ jobs:
           git commit -m "fix: address vulnerabilities"
           git push origin {% raw %}$BRANCH_NAME{% endraw %}
           gh pr create --title "Fix vulnerabilities" --body "This PR addresses the vulnerabilities found in the main branch." --base main --head {% raw %}$BRANCH_NAME{% endraw %}
-
-      - name: Capture PR URL
-        if: {% raw %}${{ steps.govulncheck.outcome == 'failure' && github.ref == 'refs/heads/main' }}{% endraw %}
-        id: capture_pr_url
-        run: |
           pr_url=$(gh pr view --json url --jq '.url')
           echo "PR_URL=$pr_url" >> $GITHUB_ENV
 
