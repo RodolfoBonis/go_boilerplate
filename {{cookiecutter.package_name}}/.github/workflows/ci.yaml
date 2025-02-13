@@ -143,6 +143,59 @@ jobs:
           git push origin {% raw %}$BRANCH_NAME{% endraw %}
           gh pr create --title "Fix vulnerabilities" --body "This PR addresses the vulnerabilities found in the main branch." --base main --head {% raw %}$BRANCH_NAME{% endraw %}
 
+      - name: Capture PR URL
+        if: {% raw %}${{ steps.govulncheck.outcome == 'failure' && github.ref == 'refs/heads/main' }}{% endraw %}
+        id: capture_pr_url
+        run: |
+          pr_url=$(gh pr view --json url --jq '.url')
+          echo "PR_URL=$pr_url" >> $GITHUB_ENV
+
       - name: Fail CI if vulnerabilities are found
         if: {% raw %}${{ steps.govulncheck.outcome == 'failure' }}{% endraw %}
         run: exit 1
+
+  notify:
+    needs: [sonar_scan, check_vulnerabilities]
+    runs-on: ubuntu-latest
+    if: always()
+    steps:
+      - name: Send Success Message via Telegram
+        if: {% raw %}${{ success() }}{% endraw %}
+        uses: akeylimepie/telegram-action@main
+        with:
+          token: {% raw %}${{ secrets.BOTTOKEN }}{% endraw %}
+          chat_id: {% raw %}${{ secrets.CHAT_ID }}{% endraw %}
+          parse_mode: 'markdown'
+          message_thread_id: {% raw %}${{ secrets.THREAD_ID }}{% endraw %}
+          text: |
+            🚀 *CI Successful!*
+
+            *Details:*
+            • Repository: {% raw %}${{ github.repository }}{% endraw %}
+            • Triggered by: {% raw %}${{ github.actor }}{% endraw %}
+            • Commit: {% raw %}${{ github.sha }}{% endraw %}
+
+            ✅ CI Status: Success
+
+      - name: Send Error Message via Telegram
+        if: {% raw %}${{ failure() }}{% endraw %}
+        uses: akeylimepie/telegram-action@main
+        with:
+          token: {% raw %}${{ secrets.BOTTOKEN }}{% endraw %}
+          chat_id: {% raw %}${{ secrets.CHAT_ID }}{% endraw %}
+          parse_mode: 'markdown'
+          message_thread_id: {% raw %}${{ secrets.THREAD_ID }}{% endraw %}
+          text: |
+            ❌ *CI Failed!*
+
+            *Error Details:*
+            • Repository: ${{ github.repository }}
+            • Triggered by: ${{ github.actor }}
+            • Commit: ${{ github.sha }}
+
+            🔍 *Debug Information:*
+            • CI Status: Failure
+            • Commit URL: https://github.com/${{ github.repository }}/commit/${{ github.sha }}
+            • PR URL: ${{ env.PR_URL }}
+
+            ⚠️ [Check GitHub Actions Logs](https://github.com/{% raw %}${{ github.repository }}{% endraw %}/actions/runs/{% raw %}${{ github.run_id }}{% endraw %})
