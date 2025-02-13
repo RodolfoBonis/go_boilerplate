@@ -160,7 +160,7 @@ jobs:
     if: always()
     steps:
       - name: Send Success Message via Telegram
-        if: {% raw %}${{ success() }}{% endraw %}
+        if: {% raw %}${{ needs.sonar_scan.result == 'success' && needs.check_vulnerabilities.result == 'success' }}{% endraw %}
         uses: akeylimepie/telegram-action@main
         with:
           token: {% raw %}${{ secrets.BOTTOKEN }}{% endraw %}
@@ -178,7 +178,7 @@ jobs:
             ✅ CI Status: Success
 
       - name: Send Error Message via Telegram
-        if: {% raw %}${{ failure() }}{% endraw %}
+        if: {% raw %}${{ needs.sonar_scan.result != 'success' || needs.check_vulnerabilities.result != 'success' }}{% endraw %}
         uses: akeylimepie/telegram-action@main
         with:
           token: {% raw %}${{ secrets.BOTTOKEN }}{% endraw %}
