@@ -189,13 +189,13 @@ jobs:
             ❌ *CI Failed!*
 
             *Error Details:*
-            • Repository: ${{ github.repository }}
-            • Triggered by: ${{ github.actor }}
-            • Commit: ${{ github.sha }}
+            • Repository: {% raw %}${{ github.repository }}{% endraw %}
+            • Triggered by: {% raw %}${{ github.actor }}{% endraw %}
+            • Commit: {% raw %}${{ github.sha }}{% endraw %}
 
             🔍 *Debug Information:*
             • CI Status: Failure
-            • Commit URL: https://github.com/${{ github.repository }}/commit/${{ github.sha }}
-            • PR URL: ${{ env.PR_URL }}
+            • Commit URL: https://github.com/{% raw %}${{ github.repository }}{% endraw %}/commit/{% raw %}${{ github.sha }}{% endraw %}
+            • PR URL: {% raw %}${{ env.PR_URL }}{% endraw %}
 
             ⚠️ [Check GitHub Actions Logs](https://github.com/{% raw %}${{ github.repository }}{% endraw %}/actions/runs/{% raw %}${{ github.run_id }}{% endraw %})
