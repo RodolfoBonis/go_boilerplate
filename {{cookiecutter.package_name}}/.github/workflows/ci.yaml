@@ -188,6 +188,7 @@ jobs:
             • Repository: {% raw %}${{ github.repository }}{% endraw %}
             • Triggered by: {% raw %}${{ github.actor }}{% endraw %}
             • Commit: {% raw %}${{ github.sha }}{% endraw %}
+            • Branch: {% raw %}${{ github.ref_name }}{% endraw %}
 
             🔍 *Debug Information:*
             • CI Status: Failure
