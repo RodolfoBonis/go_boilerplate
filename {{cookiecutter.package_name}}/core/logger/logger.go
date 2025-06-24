@@ -2,10 +2,11 @@ package logger
 
 import (
 	_ "fmt"
+	"time"
+
 	"github.com/{{cookiecutter.github_username}}/{{cookiecutter.package_name}}/core/config"
 	"github.com/{{cookiecutter.github_username}}/{{cookiecutter.package_name}}/core/entities"
 	"go.uber.org/zap"
-	"time"
 )
 
 var (
@@ -35,24 +36,22 @@ func InitLogger() {
 		return
 	}
 
-	newRelicConfig := config.NewRelicConfig()
-
 	Log = &CustomLogger{
-		logger: config.ZapConfig(newRelicConfig),
+		logger: config.ZapConfig(),
 	}
 }
 
-// Info envia um log de informação para o New Relic e o logger.
+// Info envia um log de informação para o logger.
 func (cl *CustomLogger) Info(message string, jsonData ...map[string]interface{}) {
 	cl.logger.Info(message, zap.Any("json", jsonData))
 }
 
-// Warning envia um log de aviso para o New Relic e o logger.
+// Warning envia um log de aviso para o logger.
 func (cl *CustomLogger) Warning(message string, jsonData ...map[string]interface{}) {
 	cl.logger.Warn(message, zap.Any("json", jsonData))
 }
 
-// Error envia um log de erro para o New Relic e o logger.
+// Error envia um log de erro para o logger.
 func (cl *CustomLogger) Error(message string, jsonData ...map[string]interface{}) {
 	cl.logger.Error(message, zap.Any("json", jsonData))
 }
