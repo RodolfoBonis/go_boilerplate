@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+
 	"github.com/gin-gonic/gin"
 	"github.com/{{cookiecutter.github_username}}/{{cookiecutter.package_name}}/core/config"
 	"github.com/{{cookiecutter.github_username}}/{{cookiecutter.package_name}}/core/errors"
@@ -25,11 +26,8 @@ func main() {
 
 	config.SentryConfig()
 
-	newRelicConfig := config.NewRelicConfig()
+	_middleware := middlewares.NewMonitoringMiddleware()
 
-	_middleware := middlewares.NewMonitoringMiddleware(newRelicConfig)
-
-	app.Use(_middleware.NewRelicMiddleware())
 	app.Use(_middleware.SentryMiddleware())
 	app.Use(_middleware.LogMiddleware)
 
@@ -75,8 +73,29 @@ func init() {
 
 	docs.SwaggerInfo.Title = "{{cookiecutter.package_name}}"
 	docs.SwaggerInfo.Description = "{{cookiecutter.application_description}}"
-	docs.SwaggerInfo.Version = "0.0.1"
-	docs.SwaggerInfo.Host = fmt.Sprintf("localhost:%s", config.EnvPort())
+	versionFileName := "version.txt"
+	if config.EnvironmentConfig() == entities.Environment.Production {
+		versionFileName = "/version.txt"
+	}
+
+	version := "unknown"
+	if content, err := os.ReadFile(versionFileName); err == nil {
+		version = strings.TrimSpace(string(content))
+	}
+	host := "localhost"
+
+	if config.EnvironmentConfig() == entities.Environment.Production {
+		host = "{{cookiecutter.package_name}}.rodolfodebonis.com.br"
+	}
+
+	docs.SwaggerInfo.Host = host
 	docs.SwaggerInfo.BasePath = "/v1"
-	docs.SwaggerInfo.Schemes = []string{"http", "https"}
+	docs.SwaggerInfo.Version = version
+	scheme := "http"
+
+	if config.EnvironmentConfig() == entities.Environment.Production {
+		scheme = "https"
+	}
+
+	docs.SwaggerInfo.Schemes = []string{scheme}
 }
