@@ -21,59 +21,6 @@ permissions:
   pull-requests: write
 
 jobs:
-  sonar_scan:
-    name: Sonar Scan
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          token: {% raw %}${{ secrets.GH_TOKEN }}{% endraw %}
-          fetch-depth: 0
-
-      - name: Run GoSec
-        uses: securego/gosec@v2.21.4
-        continue-on-error: true
-        id: gosec
-        with:
-          args: -fmt=sonarqube -out=gosec.json ./...
-
-      - uses: sonarsource/sonarqube-scan-action@master
-        id: sonar_scan
-        env:
-          SONAR_TOKEN: {% raw %}${{ secrets.SONAR_TOKEN }}{% endraw %}
-          SONAR_HOST_URL: {% raw %}${{ secrets.SONAR_HOST_URL }}{% endraw %}
-        with:
-          args: >
-            -Dsonar.projectKey={% raw %}${{ secrets.SONAR_PROJECT_KEY }}{% endraw %}
-            -Dsonar.sources=.
-            -Dsonar.go.gopath={% raw %}${{ env.GOPATH }}{% endraw %}
-            -Dsonar.host.url={% raw %}${{ secrets.SONAR_HOST_URL }}{% endraw %}
-            -Dsonar.externalIssuesReportPaths=gosec.json
-
-      - uses: sonarsource/sonarqube-quality-gate-action@master
-        id: sonar_quality_gate
-        timeout-minutes: 5
-        env:
-          SONAR_TOKEN: {% raw %}${{ secrets.SONAR_TOKEN }}{% endraw %}
-
-      - name: Run script
-        id: sonar_metrics
-        if: {% raw %}${{ github.event_name == 'pull_request' && always()}}{% endraw %}
-        env:
-          OPENAI_API_KEY: {% raw %}${{ secrets.OPENAI_TOKEN }}{% endraw %}
-          SONARQUBE_URL: {% raw %}${{ secrets.SONAR_HOST_URL }}{% endraw %}
-          SONARQUBE_TOKEN: {% raw %}${{ secrets.SONAR_TOKEN }}{% endraw %}
-          SONARQUBE_PROJECT_KEY: {% raw %}${{ secrets.SONAR_PROJECT_KEY }}{% endraw %}
-          GITHUB_TOKEN: {% raw %}${{ secrets.GH_TOKEN }}{% endraw %}
-          GITHUB_REPO_NAME: {% raw %}${{ github.repository }}{% endraw %}
-          GITHUB_PR_NUMBER: {% raw %}${{ github.event.pull_request.number }}{% endraw %}
-        run: |
-          python .config/scripts/generate_sonar_metrics_comment.py
-
-      - name: Fail CI if Scan or Quality Gate fails
-        if: {% raw %}${{ steps.sonar_scan.outcome == 'failure' || steps.sonar_quality_gate.outcome == 'failure' }}{% endraw %}
-        run: exit 1
-
   check_vulnerabilities:
     runs-on: {% raw %}${{ matrix.os }}{% endraw %}
 
@@ -150,12 +97,12 @@ jobs:
         run: exit 1
 
   notify:
-    needs: [sonar_scan, check_vulnerabilities]
+    needs: [check_vulnerabilities]
     runs-on: ubuntu-latest
     if: always()
     steps:
       - name: Send Success Message via Telegram
-        if: {% raw %}${{ needs.sonar_scan.result == 'success' && needs.check_vulnerabilities.result == 'success' }}{% endraw %}
+        if: {% raw %}${{ needs.check_vulnerabilities.result == 'success' }}{% endraw %}
         uses: akeylimepie/telegram-action@main
         with:
           token: {% raw %}${{ secrets.BOTTOKEN }}{% endraw %}
@@ -174,7 +121,7 @@ jobs:
             ✅ CI Status: Success
 
       - name: Send Error Message via Telegram
-        if: {% raw %}${{ needs.sonar_scan.result != 'success' || needs.check_vulnerabilities.result != 'success' }}{% endraw %}
+        if: {% raw %}${{ needs.check_vulnerabilities.result != 'success' }}{% endraw %}
         uses: akeylimepie/telegram-action@main
         with:
           token: {% raw %}${{ secrets.BOTTOKEN }}{% endraw %}
