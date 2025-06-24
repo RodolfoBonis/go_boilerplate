@@ -2,8 +2,9 @@ package config
 
 import (
 	"fmt"
-	"github.com/{{cookiecutter.github_username}}/{{cookiecutter.package_name}}/core/entities"
 	"os"
+
+	"github.com/{{cookiecutter.github_username}}/{{cookiecutter.package_name}}/core/entities"
 
 	"github.com/joho/godotenv"
 )
@@ -28,13 +29,6 @@ func EnvKeyCloak() entities.KeyCloakDataEntity {
 		ClientSecret: GetEnv("CLIENT_SECRET", "test"),
 		Realm:        GetEnv("REALM", "test"),
 		Host:         GetEnv("KEYCLOAK_HOST", "localhost"),
-	}
-}
-
-func EnvNewRelic() entities.NewRelicEnv {
-	return entities.NewRelicEnv{
-		AppName: EnvServiceName(),
-		License: GetEnv("NEW_RELIC_LICENSE_KEY", ""),
 	}
 }
 
