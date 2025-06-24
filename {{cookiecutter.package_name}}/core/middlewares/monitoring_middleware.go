@@ -1,31 +1,23 @@
 package middlewares
 
 import (
+	"net/http"
+
 	sentrygin "github.com/getsentry/sentry-go/gin"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
-	"github.com/newrelic/go-agent/v3/integrations/nrgin"
-	"github.com/newrelic/go-agent/v3/newrelic"
 	"github.com/{{cookiecutter.github_username}}/{{cookiecutter.package_name}}/core/logger"
-	"net/http"
 )
 
 type MonitoringMiddleware struct {
-	newRelicConfig *newrelic.Application
 }
 
-func NewMonitoringMiddleware(newRelicConfig *newrelic.Application) *MonitoringMiddleware {
-	return &MonitoringMiddleware{
-		newRelicConfig: newRelicConfig,
-	}
+func NewMonitoringMiddleware() *MonitoringMiddleware {
+	return &MonitoringMiddleware{}
 }
 
 func (m *MonitoringMiddleware) SentryMiddleware() gin.HandlerFunc {
 	return sentrygin.New(sentrygin.Options{Repanic: true})
-}
-
-func (m *MonitoringMiddleware) NewRelicMiddleware() gin.HandlerFunc {
-	return nrgin.Middleware(m.newRelicConfig)
 }
 
 func (m *MonitoringMiddleware) LogMiddleware(ctx *gin.Context) {
